@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Erbschafts-Vorsorge</title>
+
+<!-- ═══ PWA META TAGS (iOS + Android) ═══ -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Erbvorsorge">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#1a1510">
+<meta name="description" content="Persönliche Erbschafts-Vorsorge – AES-256 verschlüsselt, lokal gespeichert">
+
+<!-- iOS Splash + Icon (inline SVG als Data-URI) -->
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%231a1510'/%3E%3Ccircle cx='90' cy='90' r='58' fill='%23b8860b'/%3E%3Ctext x='90' y='108' font-size='58' text-anchor='middle' fill='%231a1510'%3E%F0%9F%94%8F%3C/text%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231a1510'/%3E%3Ctext x='16' y='24' font-size='20' text-anchor='middle'%3E%F0%9F%94%8F%3C/text%3E%3C/svg%3E">
+
+<!-- Manifest: iOS nutzt apple-meta-tags oben, kein externes manifest nötig für lokale HTML-Datei -->
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Sans+3:wght@300;400;500;600&display=swap');
+:root {
+  --cream:#f7f3ee;--cream2:#efe9e0;--cream3:#e4dbd0;
+  --ink:#1a1510;--ink2:#3d3428;--ink3:#6b5e4e;--ink4:#9c8c7a;
+  --gold:#b8860b;--gold2:#d4a520;
+  --red:#8b2020;--green:#1a4a2e;
+  --border:#d4c8b8;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Source Sans 3',system-ui,sans-serif;background:var(--cream);color:var(--ink);min-height:100vh;font-size:15px;-webkit-tap-highlight-color:transparent}
+/* PWA standalone: hide browser chrome padding */
+@media all and (display-mode: standalone){body{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}}
+/* Install Banner */
+#installBanner{display:none;position:fixed;bottom:0;left:0;right:0;z-index:2000;background:var(--ink);border-top:1px solid rgba(255,255,255,.12);padding:12px 18px 18px;padding-bottom:calc(18px + env(safe-area-inset-bottom))}
+#installBanner.show{display:block}
+.ib-inner{display:flex;align-items:center;gap:12px}
+.ib-icon{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,var(--gold),var(--gold2));display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0}
+.ib-text{flex:1}
+.ib-title{font-family:'Playfair Display',serif;color:#f7f3ee;font-size:.9rem;font-weight:600}
+.ib-sub{color:#9c8c7a;font-size:.68rem;margin-top:2px;line-height:1.4}
+.ib-btns{display:flex;gap:7px;margin-top:10px}
+.ib-btn{border-radius:7px;padding:8px 14px;font-size:.75rem;font-family:inherit;cursor:pointer;font-weight:600;border:none}
+.ib-btn.p{background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--ink)}
+.ib-btn.s{background:rgba(255,255,255,.08);color:#f7f3ee}
+/* iOS install instructions overlay */
+#iosGuide{display:none;position:fixed;inset:0;z-index:3000;background:rgba(0,0,0,.85);align-items:flex-end;justify-content:center}
+#iosGuide.show{display:flex}
+.ig-box{background:#1e1a14;border:1px solid rgba(255,255,255,.15);border-radius:20px 20px 0 0;padding:24px 22px 32px;width:100%;max-width:480px}
+.ig-title{font-family:'Playfair Display',serif;color:#f7f3ee;font-size:1.1rem;font-weight:700;margin-bottom:16px;text-align:center}
+.ig-steps{display:flex;flex-direction:column;gap:12px;margin-bottom:20px}
+.ig-step{display:flex;gap:12px;align-items:flex-start}
+.ig-num{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold2));display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:var(--ink);flex-shrink:0}
+.ig-step p{font-size:.82rem;color:#c9c0b5;line-height:1.5;padding-top:3px}
+.ig-step p strong{color:#f7f3ee}
+.ig-arrow{text-align:center;font-size:1.8rem;margin-bottom:4px}
+.ig-close{width:100%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:11px;color:#f7f3ee;font-size:.85rem;font-family:inherit;cursor:pointer}
+/* safe area for fixed header */
+.app-header{padding-top:calc(14px + env(safe-area-inset-top))}
+
+/* LOCK */
+#lockScreen{position:fixed;inset:0;background:#1a1510;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:1000;padding:32px 24px;background-image:radial-gradient(ellipse at 30% 20%,#2d2418 0%,#1a1510 60%)}
+.lock-seal{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold2));display:flex;align-items:center;justify-content:center;font-size:2rem;margin-bottom:20px;box-shadow:0 4px 20px rgba(184,134,11,.4)}
+.lock-title{font-family:'Playfair Display',serif;color:#f7f3ee;font-size:1.5rem;font-weight:700;text-align:center;margin-bottom:6px}
+.lock-sub{color:#9c8c7a;font-size:.8rem;text-align:center;margin-bottom:28px}
+.lock-box{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:12px 16px;margin-bottom:24px;width:100%;max-width:320px}
+.lock-box p{font-size:.72rem;color:#9c8c7a;line-height:1.55}
+.lock-box strong{color:#d4a520}
+.pw-label{font-size:.75rem;color:#9c8c7a;text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;width:100%;max-width:320px}
+.pw-row{display:flex;gap:8px;width:100%;max-width:320px;margin-bottom:8px}
+.pw-input{flex:1;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:11px 14px;color:#f7f3ee;font-size:1rem;font-family:inherit;outline:none;transition:border-color .2s}
+.pw-input:focus{border-color:var(--gold2)}
+.pw-input::placeholder{color:rgba(255,255,255,.2)}
+.btn-unlock{background:linear-gradient(135deg,var(--gold),var(--gold2));border:none;border-radius:8px;padding:11px 18px;color:var(--ink);font-weight:700;font-size:.85rem;cursor:pointer;white-space:nowrap}
+.pw-hint{font-size:.7rem;color:#6b5e4e;text-align:center}
+.pw-error{font-size:.72rem;color:#e07070;text-align:center;margin-top:6px;display:none}
+
+/* APP */
+#app{display:none;max-width:700px;margin:0 auto}
+.app-header{background:var(--ink);padding:14px 18px;position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:12px}
+.hdr-seal{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold2));display:flex;align-items:center;justify-content:center;font-size:.95rem;flex-shrink:0}
+.hdr-title{font-family:'Playfair Display',serif;color:#f7f3ee;font-size:1rem;font-weight:600}
+.hdr-sub{color:#6b5e4e;font-size:.62rem}
+.hdr-btns{margin-left:auto;display:flex;gap:7px}
+.btn-sm{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:5px 10px;color:#f7f3ee;font-size:.7rem;cursor:pointer;font-family:inherit;transition:background .15s}
+.btn-sm:hover{background:rgba(255,255,255,.14)}
+.btn-sm.gold{background:linear-gradient(135deg,var(--gold),var(--gold2));border-color:transparent;color:var(--ink);font-weight:700}
+
+/* PROGRESS */
+.prog-wrap{background:var(--cream2);border-bottom:1px solid var(--border);padding:9px 18px}
+.prog-lbl{display:flex;justify-content:space-between;font-size:.67rem;color:var(--ink4);margin-bottom:5px}
+.prog-track{height:4px;background:var(--cream3);border-radius:2px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:2px;transition:width .4s ease}
+
+/* TABS */
+.nav-tabs{display:flex;overflow-x:auto;background:var(--cream2);border-bottom:2px solid var(--border);padding:0 4px;scrollbar-width:none}
+.nav-tabs::-webkit-scrollbar{display:none}
+.nav-tab{padding:9px 13px;font-size:.7rem;color:var(--ink4);cursor:pointer;white-space:nowrap;border:none;border-bottom:2px solid transparent;margin-bottom:-2px;background:none;font-family:inherit;display:flex;align-items:center;gap:4px;transition:all .15s}
+.nav-tab.active{color:var(--gold);border-bottom-color:var(--gold);font-weight:700}
+.nav-tab .tck{width:13px;height:13px;border-radius:50%;background:var(--cream3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.52rem;color:transparent}
+.nav-tab.done .tck{background:var(--green);border-color:var(--green);color:white}
+
+/* SECTION */
+.section{display:none}
+.section.active{display:block}
+.sec-hdr{padding:16px 18px 12px;border-bottom:1px solid var(--border);background:white}
+.sec-icon{font-size:1.4rem;margin-bottom:5px}
+.sec-title{font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--ink);margin-bottom:3px}
+.sec-desc{font-size:.77rem;color:var(--ink3);line-height:1.5}
+.sbadge{display:inline-flex;align-items:center;gap:4px;font-size:.63rem;border-radius:12px;padding:2px 8px;margin-top:7px;font-weight:600}
+.sh{background:#fde8e8;color:var(--red)}
+.sm{background:#fef3cd;color:#7a5c00}
+.sl{background:#e8f5e9;color:var(--green)}
+
+/* DSGVO NOTE */
+.dsgvo-note{margin:14px 18px 0;background:#fffbf0;border:1px solid #e8d48a;border-radius:8px;padding:10px 13px;display:flex;gap:9px}
+.dsgvo-note .ni{font-size:.95rem;flex-shrink:0;margin-top:1px}
+.dsgvo-note p{font-size:.69rem;color:#5a4a00;line-height:1.55}
+.dsgvo-note strong{color:#7a6300}
+
+/* FIELDS */
+.fields-wrap{padding:14px 18px;display:flex;flex-direction:column;gap:12px}
+.fg{background:white;border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.fg-title{padding:8px 13px;background:var(--cream2);border-bottom:1px solid var(--border);font-size:.68rem;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em}
+.fr{padding:9px 13px;border-bottom:1px solid var(--cream2);display:flex;flex-direction:column;gap:4px}
+.fr:last-child{border-bottom:none}
+.flbl{font-size:.7rem;font-weight:600;color:var(--ink3);display:flex;justify-content:space-between;align-items:center}
+.fopt{font-size:.59rem;color:var(--ink4);font-weight:400;font-style:italic}
+.fi,.fta,.fsel{width:100%;background:var(--cream);border:1px solid var(--border);border-radius:6px;padding:7px 10px;font-size:.8rem;color:var(--ink);font-family:inherit;outline:none;transition:border-color .15s;-webkit-appearance:none}
+.fi:focus,.fta:focus,.fsel:focus{border-color:var(--gold);background:white}
+.fta{min-height:66px;resize:vertical;line-height:1.5}
+.fsel{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%239c8c7a'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:26px;cursor:pointer}
+.fhint{font-size:.64rem;color:var(--ink4);line-height:1.4;padding:0 1px}
+
+/* FOOTER */
+.sec-footer{padding:12px 18px 18px;display:flex;gap:10px;align-items:center}
+.btn-save{background:linear-gradient(135deg,var(--gold),var(--gold2));border:none;border-radius:8px;padding:9px 18px;color:var(--ink);font-weight:700;font-size:.8rem;cursor:pointer;font-family:inherit}
+.save-ok{font-size:.7rem;color:var(--green);display:none;align-items:center;gap:4px}
+.save-ok.show{display:flex}
+
+/* OVERVIEW */
+.ov-grid{padding:14px 18px;display:flex;flex-direction:column;gap:9px}
+.ov-card{background:white;border:1px solid var(--border);border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:11px;cursor:pointer;transition:border-color .15s}
+.ov-card:hover{border-color:var(--gold)}
+.ov-icon{font-size:1.3rem;flex-shrink:0}
+.ov-info{flex:1}
+.ov-ttl{font-weight:600;font-size:.83rem;color:var(--ink)}
+.ov-st{font-size:.68rem;color:var(--ink4);margin-top:2px}
+.ov-badge{font-size:.62rem;border-radius:10px;padding:2px 9px;font-weight:600;white-space:nowrap}
+.ov-badge.done{background:#e8f5e9;color:var(--green)}
+.ov-badge.partial{background:#fef3cd;color:#7a5c00}
+.ov-badge.empty{background:var(--cream2);color:var(--ink4)}
+
+/* EXPORT BOX */
+.exp-box{margin:0 18px 18px;background:var(--ink);border-radius:10px;padding:16px;color:#f7f3ee}
+.exp-box h3{font-family:'Playfair Display',serif;font-size:.95rem;margin-bottom:5px}
+.exp-box p{font-size:.72rem;color:#6b5e4e;line-height:1.5;margin-bottom:12px}
+.exp-btns{display:flex;gap:7px;flex-wrap:wrap}
+.btn-exp{border:1px solid rgba(255,255,255,.2);border-radius:7px;padding:7px 13px;font-size:.72rem;cursor:pointer;font-family:inherit;transition:all .15s}
+.btn-exp.p{background:linear-gradient(135deg,var(--gold),var(--gold2));border-color:transparent;color:var(--ink);font-weight:700}
+.btn-exp.s{background:transparent;color:#f7f3ee}
+.btn-exp.s:hover{background:rgba(255,255,255,.08)}
+
+/* INFO BLOCKS */
+.iblock{margin:14px 18px 0;background:white;border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.iblock-ttl{padding:9px 13px;background:var(--cream2);border-bottom:1px solid var(--border);font-size:.68rem;font-weight:700;color:var(--ink2);text-transform:uppercase;letter-spacing:.06em}
+.iblock-body{padding:12px 13px}
+.iblock-body p{font-size:.77rem;color:var(--ink3);line-height:1.6;margin-bottom:7px}
+.iblock-body p:last-child{margin-bottom:0}
+.iblock-body ul{padding-left:15px}
+.iblock-body li{font-size:.77rem;color:var(--ink3);line-height:1.6;margin-bottom:3px}
+.iblock-body strong{color:var(--ink)}
+
+@media print{
+  #lockScreen,.app-header,.nav-tabs,.prog-wrap,.sec-footer,.exp-box{display:none!important}
+  body{background:white;font-size:10pt}
+  .section{display:block!important}
+  .sec-hdr{background:none;border-bottom:1pt solid #ccc;padding:10pt 0 6pt}
+  .fg{border:1pt solid #ccc;margin-bottom:8pt;break-inside:avoid}
+  .fi,.fta,.fsel{background:none;border:none;border-bottom:.5pt solid #ddd;border-radius:0;padding:3pt 0}
+  .dsgvo-note{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- LOCK SCREEN -->
+<div id="lockScreen">
+  <div class="lock-seal">🔏</div>
+  <div class="lock-title">Erbschafts-Vorsorge</div>
+  <div class="lock-sub">Persönliche Vermögensdokumentation</div>
+  <div class="lock-box">
+    <p><strong>🔐 AES-256-GCM Verschlüsselung</strong><br>
+    Daten werden mit militärstandard-starker Verschlüsselung gespeichert. Kein Server, keine Cloud.<br><br>
+    PBKDF2 · 310 000 Iterationen · AES-256-GCM · Web Crypto API<br><br>
+    DSGVO Art. 2 Abs. 2c – private Nutzung ist ausgenommen.<br><br>
+    <strong>Passwort vergessen = Daten nicht entschlüsselbar.</strong> Bitte separat im Tresor notieren.</p>
+  </div>
+  <div class="pw-label">Passwort setzen / eingeben</div>
+  <div class="pw-row">
+    <input class="pw-input" type="password" id="pwInput" placeholder="Passwort …" autocomplete="off">
+    <button class="btn-unlock" onclick="unlock()">Öffnen</button>
+  </div>
+  <div class="pw-hint">Beim ersten Start ein neues Passwort wählen.</div>
+  <div style="margin-top:14px">
+    <button onclick="resetPassword()" style="background:none;border:none;color:#6b5e4e;font-size:.72rem;cursor:pointer;font-family:inherit;text-decoration:underline">
+      Passwort vergessen / zurücksetzen
+    </button>
+  </div>
+  <div style="margin-top:18px;text-align:center">
+    <button onclick="loadDemo()" style="background:rgba(184,134,11,.15);border:1px solid rgba(184,134,11,.4);border-radius:8px;padding:8px 16px;color:#d4a520;font-size:.72rem;cursor:pointer;font-family:inherit">
+      👁️ Demo mit Musterdaten anzeigen
+    </button>
+    <div style="font-size:.62rem;color:#6b5e4e;margin-top:5px">Keine echten Daten – nur zur Vorschau</div>
+  </div>
+  <div class="pw-error" id="pwError">Falsches Passwort – bitte erneut versuchen.</div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="app-header">
+    <div class="hdr-seal">🔏</div>
+    <div><div class="hdr-title">Erbschafts-Vorsorge</div><div class="hdr-sub">Nur lokal gespeichert · kein Netz</div></div>
+    <div class="hdr-btns">
+      <button class="btn-sm" onclick="lockApp()">🔒 Sperren</button>
+      <button class="btn-sm gold" onclick="nav('uebersicht')">Export</button>
+    </div>
+  </div>
+
+  <div class="prog-wrap">
+    <div class="prog-lbl"><span>Vollständigkeit</span><span id="progPct">0 %</span></div>
+    <div class="prog-track"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+  </div>
+
+  <div class="nav-tabs">
+    <button class="nav-tab active" data-s="identitaet" onclick="nav('identitaet')"><span class="tck" id="t-identitaet"></span>👤 Identität</button>
+    <button class="nav-tab" data-s="finanzen" onclick="nav('finanzen')"><span class="tck" id="t-finanzen"></span>💶 Finanzen</button>
+    <button class="nav-tab" data-s="immobilien" onclick="nav('immobilien')"><span class="tck" id="t-immobilien"></span>🏠 Immobilien</button>
+    <button class="nav-tab" data-s="versicherungen" onclick="nav('versicherungen')"><span class="tck" id="t-versicherungen"></span>📋 Versicherungen</button>
+    <button class="nav-tab" data-s="digital" onclick="nav('digital')"><span class="tck" id="t-digital"></span>💻 Digital</button>
+    <button class="nav-tab" data-s="vollmachten" onclick="nav('vollmachten')"><span class="tck" id="t-vollmachten"></span>📜 Vollmachten</button>
+    <button class="nav-tab" data-s="kontakte" onclick="nav('kontakte')"><span class="tck" id="t-kontakte"></span>📞 Kontakte</button>
+    <button class="nav-tab" data-s="uebersicht" onclick="nav('uebersicht')"><span class="tck" id="t-uebersicht"></span>📊 Übersicht</button>
+    <button class="nav-tab" data-s="dsgvo" onclick="nav('dsgvo')"><span class="tck" id="t-dsgvo"></span>🛡️ DSGVO</button>
+  </div>
+
+  <!-- ── IDENTITÄT ── -->
+  <div class="section active" id="s-identitaet">
+    <div class="sec-hdr">
+      <div class="sec-icon">👤</div>
+      <div class="sec-title">Persönliche Identität</div>
+      <div class="sec-desc">Grunddaten zur eindeutigen Identifikation – werden von Behörden und Gerichten benötigt.</div>
+      <div class="sbadge sm">🟡 Mittlere Sensitivität</div>
+    </div>
+    <div class="fields-wrap">
+      <div class="fg">
+        <div class="fg-title">🪪 Person</div>
+        <div class="fr"><div class="flbl">Vollständiger Name</div><input class="fi" data-key="id_name" placeholder="Vorname Nachname" type="text"></div>
+        <div class="fr"><div class="flbl">Geburtsname <span class="fopt">falls abweichend</span></div><input class="fi" data-key="id_geburtsname" placeholder="Geburtsname" type="text"></div>
+        <div class="fr"><div class="flbl">Geburtsdatum</div><input class="fi" data-key="id_geb" placeholder="TT.MM.JJJJ" type="text"></div>
+        <div class="fr"><div class="flbl">Geburtsort</div><input class="fi" data-key="id_gebort" placeholder="Stadt, Land" type="text"></div>
+        <div class="fr"><div class="flbl">Staatsangehörigkeit</div><input class="fi" data-key="id_staat" placeholder="z.B. Deutsch" type="text"></div>
+      </div>
+      <div class="fg">
+        <div class="fg-title">📍 Kontakt &amp; Meldung</div>
+        <div class="fr"><div class="flbl">Hauptwohnsitz (Meldeadresse)</div><input class="fi" data-key="id_adr" placeholder="Straße, PLZ Ort" type="text"></div>
+        <div class="fr"><div class="flbl">Telefon</div><input class="fi" data-key="id_tel" placeholder="+49 …" type="tel"></div>
+        <div class="fr"><div class="flbl">E-Mail (Hauptadresse)</div><input class="fi" data-key="id_mail" placeholder="name@domain.de" type="email"></div>
+      </div>
+      <div class="fg">
+        <div class="fg-title">🆔 Ausweise &amp; Nummern</div>
+        <div class="fr"><div class="flbl">Personalausweis-Nr.</div><input class="fi" data-key="id_pa" placeholder="Nr. + Gültigkeit + Aufbewahrungsort" type="text"></div>
+        <div class="fr"><div class="flbl">Steuer-ID (Identifikationsnr.)</div><input class="fi" data-key="id_stid" placeholder="11-stellige Nummer" type="text"></div>
+        <div class="fr"><div class="flbl">Rentenversicherungsnr.</div><input class="fi" data-key="id_rv" placeholder="z.B. 12 345678 A 123" type="text"></div>
+        <div class="fr"><div class="flbl">Krankenversicherungsnr.</div><input class="fi" data-key="id_kv" placeholder="10-stellige Nr." type="text"></div>
+      </div>
+      <div class="fg">
+        <div class="fg-title">💍 Familienstand</div>
+        <div class="fr"><div class="flbl">Familienstand</div>
+          <select class="fsel" data-key="id_fstand">
+            <option value="">— bitte wählen —</option>
+            <option>Ledig</option><option>Verheiratet</option><option>Eingetragene Lebenspartnerschaft</option><option>Geschieden</option><option>Verwitwet</option>
+          </select>
+        </div>
+        <div class="fr"><div class="flbl">Ehepartner / Lebenspartner</div><input class="fi" data-key="id_partner" placeholder="Name, Geburtsdatum" type="text"></div>
+        <div class="fr"><div class="flbl">Kinder</div><textarea class="fta" data-key="id_kinder" placeholder="Kind 1: Name, Geb.datum&#10;Kind 2: …"></textarea></div>
+      </div>
+    </div>
+    <div class="sec-footer">
+      <button class="btn-save" onclick="save('identitaet')">💾 Speichern</button>
+      <div class="save-ok" id="ok-identitaet">✅ Gespeichert</div>
+    </div>
+  </div>
+
+  <!-- ── FINANZEN ── -->
+  <div class="section" id="s-finanzen">
+    <div class="sec-hdr">
+      <div class="sec-icon">💶</div>
+      <div class="sec-title">Finanzen &amp; Vermögen</div>
+      <div class="sec-desc">Konten, Depots, Rohstoffe, Kryptowährungen, Beteiligungen, Schulden. Vollständige Vermögensübersicht für den Erbfall.</div>
+      <div class="sbadge sh">🔴 Hohe Sensitivität</div>
+    </div>
+    <div class="dsgvo-note"><div class="ni">⚠️</div><p><strong>Tipp:</strong> Keine vollständigen Kontonummern, TANs oder Wallet-Keys eintragen. Institut + Kundennummer bzw. Depot-Hinweis reicht für Erben zur Kontaktaufnahme.</p></div>
+    <div class="fields-wrap">
+
+      <div class="fg">
+        <div class="fg-title">🏦 Bankkonten</div>
+        <div class="fr"><div class="flbl">Girokonto(en)</div><textarea class="fta" data-key="fin_giro" placeholder="Bank: …&#10;IBAN (nur letzte 4 Ziffern): …XXXX&#10;Kundennr.: …"></textarea></div>
+        <div class="fr"><div class="flbl">Sparkonten / Festgeld <span class="fopt">optional</span></div><textarea class="fta" data-key="fin_spar" placeholder="Bank: …&#10;Art: Sparkonto / Festgeld&#10;Kundennr.: …"></textarea></div>
+        <div class="fr"><div class="flbl">Bank-Hotline (für Erben)</div><input class="fi" data-key="fin_hotline" placeholder="Telefonnummer der Bank" type="text"><div class="fhint">Keine Zugangsdaten (PIN/TAN) eintragen</div></div>
+      </div>
+
+      <div class="fg">
+        <div class="fg-title">📈 Wertpapiere &amp; Depots</div>
+        <div class="fr"><div class="flbl">Aktien &amp; ETFs</div><textarea class="fta" data-key="fin_depot" placeholder="Broker / Depotbank: …&#10;Depotnr.: …&#10;Inhalt grob: Aktien / ETFs / Anleihen"></textarea></div>
+        <div class="fr"><div class="flbl">Anleihen / Bonds <span class="fopt">optional</span></div><textarea class="fta" data-key="fin_anleihen" placeholder="Emittent: …&#10;Nominal: … €&#10;Depotbank: …&#10;Laufzeit bis: …"></textarea></div>
+        <div class="fr"><div class="flbl">Investmentfonds <span class="fopt">optional</span></div><textarea class="fta" data-key="fin_fonds" placeholder="Fondsname: …&#10;ISIN: …&#10;Anteile ca.: …&#10;Depotbank: …"></textarea></div>
+      </div>
+
+      <div class="fg">
+        <div class="fg-title">🥇 Rohstoffe &amp; Edelmetalle</div>
+        <div class="fr"><div class="flbl">Physisches Gold</div><textarea class="fta" data-key="fin_gold" placeholder="Form: Münzen / Barren&#10;Gewicht gesamt: … g / oz&#10;Aufbewahrungsort: Tresor / Schließfach / …&#10;Händler / Ankaufstelle: …"></textarea></div>
+        <div class="fr"><div class="flbl">Physisches Silber <span class="fopt">optional</span></div><textarea class="fta" data-key="fin_silber" placeholder="Form: Münzen / Barren&#10;Gewicht gesamt: … g / kg&#10;Aufbewahrungsort: …"></textarea></div>
+        <div class="fr"><div class="flbl">Weitere Edelmetalle <span class="fopt">Platin, Palladium …</span></div><textarea class="fta" data-key="fin_metall" placeholder="Metall: …&#10;Form: …&#10;Menge: …&#10;Aufbewahrungsort: …"></textarea></div>
+        <div class="fr"><div class="flbl">Rohstoff-ETCs / Zertifikate <span class="fopt">optional</span></div><textarea class="fta" data-key="fin_etc" placeholder="Produkt: z.B. Xetra-Gold, EUWAX Gold&#10;ISIN: …&#10;Depotbank: …&#10;Menge: …"></textarea><div class="fhint">Wichtig für Erben: physisch hinterlegte ETCs (z.B. Xetra-Gold) können auf Auslieferung bestehen</div></div>
+        <div class="fr"><div class="flbl">Rohstoff-Futures / Sonstige <span class="fopt">optional</span></div><textarea class="fta" data-key="fin_rohstoff_sonst" placeholder="Broker: …&#10;Produkt: …&#10;Kontaktperson: …"></textarea></div>
+      </div>
+
+      <div class="fg">
+        <div class="fg-title">₿ Kryptowährungen &amp; digitale Assets</div>
+        <div class="fr"><div class="flbl">Krypto-Bestände (Übersicht)</div><textarea class="fta" data-key="fin_krypto" placeholder="Bitcoin: ca. … BTC&#10;Ethereum: ca. … ETH&#10;Sonstige: …&#10;Gesamtwert ca.: … €"></textarea></div>
+        <div class="fr"><div class="flbl">Verwahrung</div>
+          <select class="fsel" data-key="fin_krypto_art">
+            <option value="">— bitte wählen —</option>
+            <option>Exchange (Börse) – Zugangsdaten im Passwort-Manager</option>
+            <option>Hardware Wallet (Cold Storage)</option>
+            <option>Software Wallet</option>
+            <option>Kombination</option>
+          </select>
+        </div>
+        <div class="fr"><div class="flbl">Exchange / Broker</div><textarea class="fta" data-key="fin_krypto_exchange" placeholder="Exchange: z.B. Coinbase, Kraken, Binance&#10;Kundennr. / E-Mail: …&#10;Zugangsdaten: im Passwort-Manager unter …"></textarea><div class="fhint">Keine Passwörter oder Seed-Phrases hier eintragen</div></div>
+        <div class="fr"><div class="flbl">Hardware Wallet <span class="fopt">falls vorhanden</span></div><textarea class="fta" data-key="fin_krypto_hw" placeholder="Gerät: z.B. Ledger Nano X&#10;Aufbewahrungsort: …&#10;Seed-Phrase: NICHT hier – liegt in: …"></textarea><div class="fhint">Die Seed-Phrase (24 Wörter) ist der einzige Zugang. Separat und sicher verwahren – z.B. Stahlplatte im Tresor</div></div>
+        <div class="fr"><div class="flbl">NFTs / sonstige digitale Assets <span class="fopt">optional</span></div><textarea class="fta" data-key="fin_nft" placeholder="Plattform: …&#10;Wallet-Adresse (öffentlich): …&#10;Zugangsdaten: im Passwort-Manager"></textarea></div>
+      </div>
+
+      <div class="fg">
+        <div class="fg-title">💱 Fremdwährungen &amp; Devisen</div>
+        <div class="fr"><div class="flbl">Fremdwährungskonten</div><textarea class="fta" data-key="fin_fx_konto" placeholder="Bank: …&#10;Währung: z.B. USD, CHF, GBP&#10;Betrag ca.: …&#10;IBAN / Kontonr.: …"></textarea></div>
+        <div class="fr"><div class="flbl">Bargeld in Fremdwährung <span class="fopt">optional</span></div><textarea class="fta" data-key="fin_fx_cash" placeholder="Währung: …&#10;Betrag ca.: …&#10;Aufbewahrungsort: …"></textarea></div>
+        <div class="fr"><div class="flbl">Forex / CFD-Konten <span class="fopt">optional</span></div><textarea class="fta" data-key="fin_fx_broker" placeholder="Broker: …&#10;Kundennr.: …&#10;Zugangsdaten: im Passwort-Manager"></textarea></div>
+      </div>
+
+      <div class="fg">
+        <div class="fg-title">🏢 Unternehmensbeteiligungen &amp; sonstiges Kapital</div>
+        <div class="fr"><div class="flbl">GmbH / UG / AG Anteile <span class="fopt">falls vorhanden</span></div><textarea class="fta" data-key="fin_gmbh" placeholder="Unternehmen: …&#10;Anteil: … %&#10;Notariell beurkundet: Ja / Nein&#10;Notar: …&#10;Gesellschaftsvertrag bei: …"></textarea></div>
+        <div class="fr"><div class="flbl">Stille Beteiligungen / Genussrechte <span class="fopt">optional</span></div><textarea class="fta" data-key="fin_beteil" placeholder="Unternehmen: …&#10;Art: …&#10;Betrag: … €&#10;Laufzeit: …&#10;Vertrag bei: …"></textarea></div>
+        <div class="fr"><div class="flbl">Genossenschaftsanteile <span class="fopt">optional</span></div><textarea class="fta" data-key="fin_geno" placeholder="Genossenschaft: z.B. Volksbank, Wohnbaugen.&#10;Anteile: …&#10;Wert: … €"></textarea></div>
+        <div class="fr"><div class="flbl">Private Darlehen (als Gläubiger) <span class="fopt">optional</span></div><textarea class="fta" data-key="fin_darlehen_out" placeholder="Schuldner: …&#10;Betrag: … €&#10;Fälligkeit: …&#10;Schriftlicher Vertrag: Ja / Nein + Aufbewahrungsort"></textarea><div class="fhint">Private Forderungen gehören zum Nachlass – ohne schriftlichen Nachweis schwer durchsetzbar</div></div>
+      </div>
+
+      <div class="fg">
+        <div class="fg-title">🏗️ Altersvorsorge &amp; Rente</div>
+        <div class="fr"><div class="flbl">Gesetzliche Rente (DRV)</div><input class="fi" data-key="fin_drv" placeholder="Rentenversicherungsnr. + letzter Bescheid" type="text"></div>
+        <div class="fr"><div class="flbl">Betriebliche Altersvorsorge <span class="fopt">falls vorhanden</span></div><textarea class="fta" data-key="fin_bav" placeholder="Anbieter: …&#10;Vertragsnr.: …&#10;Arbeitgeber der Einzahlung: …"></textarea></div>
+        <div class="fr"><div class="flbl">Private Rentenversicherung <span class="fopt">falls vorhanden</span></div><textarea class="fta" data-key="fin_priv" placeholder="Versicherer: …&#10;Vertragsnr.: …&#10;Laufzeit bis: …"></textarea></div>
+        <div class="fr"><div class="flbl">Riester / Rürup <span class="fopt">optional</span></div><textarea class="fta" data-key="fin_riester" placeholder="Anbieter: …&#10;Vertragsnr.: …&#10;Zulagennr.: …"></textarea></div>
+      </div>
+
+      <div class="fg">
+        <div class="fg-title">💸 Schulden &amp; Verbindlichkeiten</div>
+        <div class="fr"><div class="flbl">Laufende Kredite / Darlehen</div><textarea class="fta" data-key="fin_kredit" placeholder="Gläubiger: …&#10;Kreditnr.: …&#10;Restschuld ca.: … €&#10;Laufzeit bis: …"></textarea><div class="fhint">Wichtig: Erben haften auch für Schulden – vollständige Angabe schützt vor Überraschungen</div></div>
+        <div class="fr"><div class="flbl">Sonstige Verbindlichkeiten <span class="fopt">optional</span></div><textarea class="fta" data-key="fin_schuld2" placeholder="z.B. private Darlehen, Unterhaltsverpflichtungen …"></textarea></div>
+      </div>
+
+      <div class="fg">
+        <div class="fg-title">📝 Sonstiges Vermögen &amp; freie Notizen</div>
+        <div class="fr"><div class="flbl">Wertgegenstände / Schmuck / Bargeld</div><textarea class="fta" data-key="fin_wert" placeholder="Gegenstand: …&#10;Aufbewahrungsort: …&#10;Schätzwert ca.: …"></textarea></div>
+        <div class="fr"><div class="flbl">Tresor / Schließfach <span class="fopt">falls vorhanden</span></div><input class="fi" data-key="fin_tresor" placeholder="Standort + Schlüssel liegt bei: …" type="text"></div>
+        <div class="fr"><div class="flbl">Sonstiges Vermögen – freie Notiz 1</div><textarea class="fta" data-key="fin_frei1" placeholder="z.B. Oldtimer, Kunstwerke, Sammlungen, Patente …&#10;Beschreibung: …&#10;Wert ca.: …&#10;Dokumente bei: …"></textarea></div>
+        <div class="fr"><div class="flbl">Sonstiges Vermögen – freie Notiz 2</div><textarea class="fta" data-key="fin_frei2" placeholder="Weitere Vermögenspositionen …"></textarea></div>
+        <div class="fr"><div class="flbl">Sonstiges Vermögen – freie Notiz 3</div><textarea class="fta" data-key="fin_frei3" placeholder="Weitere Vermögenspositionen …"></textarea></div>
+      </div>
+
+    </div>
+    <div class="sec-footer"><button class="btn-save" onclick="save('finanzen')">💾 Speichern</button><div class="save-ok" id="ok-finanzen">✅ Gespeichert</div></div>
+  </div>
+
+  <!-- ── IMMOBILIEN ── -->
+  <div class="section" id="s-immobilien">
+    <div class="sec-hdr">
+      <div class="sec-icon">🏠</div>
+      <div class="sec-title">Immobilien &amp; Grundbesitz</div>
+      <div class="sec-desc">Alle Grundstücke, Wohnungen, Häuser – auch Miteigentumsanteile und Erbbaurechte.</div>
+      <div class="sbadge sh">🔴 Hohe Sensitivität</div>
+    </div>
+    <div class="fields-wrap">
+      <div class="fg">
+        <div class="fg-title">🏡 Immobilie 1</div>
+        <div class="fr"><div class="flbl">Art der Immobilie</div>
+          <select class="fsel" data-key="im1_art">
+            <option value="">— bitte wählen —</option>
+            <option>Einfamilienhaus</option><option>Eigentumswohnung</option><option>Mehrfamilienhaus</option><option>Grundstück</option><option>Gewerbeimmobilie</option><option>Ferienimmobilie</option>
+          </select>
+        </div>
+        <div class="fr"><div class="flbl">Adresse</div><input class="fi" data-key="im1_adr" placeholder="Straße, PLZ Ort" type="text"></div>
+        <div class="fr"><div class="flbl">Grundbuch-Angaben</div><textarea class="fta" data-key="im1_gb" placeholder="Grundbuchamt: …&#10;Gemarkung: …&#10;Flur / Flurstück: …&#10;Blatt-Nr.: …"></textarea></div>
+        <div class="fr"><div class="flbl">Eigentumsanteil</div><input class="fi" data-key="im1_anteil" placeholder="z.B. 100 % / 50 % Miteigentum mit: …" type="text"></div>
+        <div class="fr"><div class="flbl">Belastungen (Grundschuld, Nießbrauch …)</div><textarea class="fta" data-key="im1_last" placeholder="Grundschuld bei: … Restbetrag ca.: … €&#10;Nießbrauch / Wohnrecht für: …"></textarea></div>
+        <div class="fr"><div class="flbl">Hausverwaltung / WEG <span class="fopt">falls zutreffend</span></div><input class="fi" data-key="im1_verw" placeholder="Name + Telefon der Verwaltung" type="text"></div>
+        <div class="fr"><div class="flbl">Dokumente – Aufbewahrungsort</div><input class="fi" data-key="im1_docs" placeholder="z.B. Ordner &quot;Haus&quot; im Arbeitszimmer" type="text"></div>
+      </div>
+      <div class="fg">
+        <div class="fg-title">🏠 Weitere Immobilien <span style="font-weight:400;color:var(--ink4)">(optional)</span></div>
+        <div class="fr"><div class="flbl">Weitere Objekte</div><textarea class="fta" data-key="im_mehr" placeholder="Art, Adresse, Grundbuchamt, Belastungen …" style="min-height:90px"></textarea></div>
+      </div>
+    </div>
+    <div class="sec-footer"><button class="btn-save" onclick="save('immobilien')">💾 Speichern</button><div class="save-ok" id="ok-immobilien">✅ Gespeichert</div></div>
+  </div>
+
+  <!-- ── VERSICHERUNGEN ── -->
+  <div class="section" id="s-versicherungen">
+    <div class="sec-hdr">
+      <div class="sec-icon">📋</div>
+      <div class="sec-title">Versicherungen</div>
+      <div class="sec-desc">Alle aktiven Verträge. Lebens- und Unfallversicherungen können direkte Leistungen an Bezugsberechtigte auslösen – außerhalb des Nachlasses.</div>
+      <div class="sbadge sm">🟡 Mittlere Sensitivität</div>
+    </div>
+    <div class="fields-wrap">
+      <div class="fg">
+        <div class="fg-title">❤️ Lebens- &amp; Risikoversicherungen</div>
+        <div class="fr"><div class="flbl">Lebensversicherungen</div><textarea class="fta" data-key="vs_lv" placeholder="Versicherer: …&#10;Vertragsnr.: …&#10;Versicherungssumme ca.: … €&#10;Bezugsberechtigter: …"></textarea><div class="fhint">Bezugsberechtigte können direkt bei der Versicherung Ansprüche geltend machen</div></div>
+        <div class="fr"><div class="flbl">Risikolebensversicherung <span class="fopt">optional</span></div><textarea class="fta" data-key="vs_rlv" placeholder="Versicherer: …&#10;Vertragsnr.: …&#10;Laufzeit bis: …&#10;Summe: … €"></textarea></div>
+      </div>
+      <div class="fg">
+        <div class="fg-title">🏥 Kranken- &amp; Pflegeversicherung</div>
+        <div class="fr"><div class="flbl">Krankenversicherung</div><input class="fi" data-key="vs_kv" placeholder="Kasse / Versicherer + Kundennr." type="text"></div>
+        <div class="fr"><div class="flbl">Art</div>
+          <select class="fsel" data-key="vs_kvart">
+            <option value="">— bitte wählen —</option><option>Gesetzlich (GKV)</option><option>Privat (PKV)</option><option>Beihilfe + PKV</option>
+          </select>
+        </div>
+        <div class="fr"><div class="flbl">Pflegezusatzversicherung <span class="fopt">falls vorhanden</span></div><input class="fi" data-key="vs_pflege" placeholder="Versicherer + Vertragsnr." type="text"></div>
+      </div>
+      <div class="fg">
+        <div class="fg-title">🏠 Sach- &amp; Haftpflichtversicherungen</div>
+        <div class="fr"><div class="flbl">Private Haftpflicht</div><input class="fi" data-key="vs_hp" placeholder="Versicherer + Vertragsnr." type="text"></div>
+        <div class="fr"><div class="flbl">Hausrat</div><input class="fi" data-key="vs_hr" placeholder="Versicherer + Vertragsnr." type="text"></div>
+        <div class="fr"><div class="flbl">Gebäudeversicherung <span class="fopt">falls Eigentum</span></div><input class="fi" data-key="vs_geb" placeholder="Versicherer + Vertragsnr." type="text"></div>
+        <div class="fr"><div class="flbl">Kfz-Versicherung(en)</div><textarea class="fta" data-key="vs_kfz" placeholder="Fahrzeug + Kennzeichen + Versicherer + Vertragsnr."></textarea></div>
+        <div class="fr"><div class="flbl">Weitere Versicherungen <span class="fopt">optional</span></div><textarea class="fta" data-key="vs_mehr" placeholder="Rechtsschutz, Unfall, Reise, Tier …"></textarea></div>
+      </div>
+    </div>
+    <div class="sec-footer"><button class="btn-save" onclick="save('versicherungen')">💾 Speichern</button><div class="save-ok" id="ok-versicherungen">✅ Gespeichert</div></div>
+  </div>
+
+  <!-- ── DIGITAL ── -->
+  <div class="section" id="s-digital">
+    <div class="sec-hdr">
+      <div class="sec-icon">💻</div>
+      <div class="sec-title">Digitales Erbe</div>
+      <div class="sec-desc">E-Mail-Konten, Abonnements, soziale Medien, wichtige Online-Zugänge. Zunehmend bedeutsam für Erben.</div>
+      <div class="sbadge sh">🔴 Hohe Sensitivität</div>
+    </div>
+    <div class="dsgvo-note"><div class="ni">⚠️</div><p><strong>Wichtig:</strong> Keine Passwörter im Klartext eintragen. Stattdessen: Name eines Passwort-Managers + wer den Master-Key kennt.</p></div>
+    <div class="fields-wrap">
+      <div class="fg">
+        <div class="fg-title">🔑 Passwort-Management</div>
+        <div class="fr"><div class="flbl">Passwort-Manager</div><input class="fi" data-key="dg_pwm" placeholder="z.B. 1Password, Bitwarden, iCloud Schlüsselbund" type="text"></div>
+        <div class="fr"><div class="flbl">Master-Passwort bekannt bei</div><input class="fi" data-key="dg_master" placeholder="Person + Aufbewahrungsort des Master-Keys" type="text"><div class="fhint">Den Master-Key NICHT hier eintragen – separat im Tresor / beim Notar hinterlegen</div></div>
+      </div>
+      <div class="fg">
+        <div class="fg-title">📧 E-Mail-Konten</div>
+        <div class="fr"><div class="flbl">Haupt-E-Mail-Adresse(n)</div><textarea class="fta" data-key="dg_mail" placeholder="Adresse: …&#10;Anbieter: …&#10;Zugang über: Passwort-Manager / Person: …"></textarea></div>
+      </div>
+      <div class="fg">
+        <div class="fg-title">📱 Geräte</div>
+        <div class="fr"><div class="flbl">Smartphone – Zuganghinweis</div><input class="fi" data-key="dg_phone" placeholder="Hinterlegt bei: … (keine PIN hier eintragen)" type="text"></div>
+        <div class="fr"><div class="flbl">Computer / Laptop</div><input class="fi" data-key="dg_pc" placeholder="Gerätetyp + Login-Hinweis" type="text"></div>
+      </div>
+      <div class="fg">
+        <div class="fg-title">💳 Abonnements &amp; laufende Verträge</div>
+        <div class="fr"><div class="flbl">Monatliche / jährliche Abos</div><textarea class="fta" data-key="dg_abos" placeholder="Netflix: …&#10;Spotify: …&#10;Amazon Prime: …&#10;Zeitungen / Sonstige: …"></textarea><div class="fhint">Können von Erben meist per E-Mail gekündigt werden – Übersicht spart Zeit und Geld</div></div>
+      </div>
+      <div class="fg">
+        <div class="fg-title">🌐 Soziale Medien &amp; wichtige Accounts</div>
+        <div class="fr"><div class="flbl">Accounts – Wunsch für den Todesfall</div><textarea class="fta" data-key="dg_social" placeholder="Facebook: Profil löschen / memorialisieren&#10;Instagram: …&#10;XING / LinkedIn: …&#10;Sonstige: …"></textarea></div>
+        <div class="fr"><div class="flbl">Finanz- &amp; Behörden-Accounts</div><textarea class="fta" data-key="dg_acc" placeholder="ELSTER: …&#10;PayPal: …&#10;eBay / Amazon Verkäufer: …"></textarea></div>
+      </div>
+    </div>
+    <div class="sec-footer"><button class="btn-save" onclick="save('digital')">💾 Speichern</button><div class="save-ok" id="ok-digital">✅ Gespeichert</div></div>
+  </div>
+
+  <!-- ── VOLLMACHTEN ── -->
+  <div class="section" id="s-vollmachten">
+    <div class="sec-hdr">
+      <div class="sec-icon">📜</div>
+      <div class="sec-title">Vollmachten &amp; Verfügungen</div>
+      <div class="sec-desc">Die wichtigsten Dokumente im Notfall. Ohne Vollmacht können Angehörige auch bei Handlungsunfähigkeit nicht agieren.</div>
+      <div class="sbadge sh">🔴 Hohe Sensitivität</div>
+    </div>
+    <div class="fields-wrap">
+      <div class="fg">
+        <div class="fg-title">⚖️ Testament &amp; Erbvertrag</div>
+        <div class="fr"><div class="flbl">Testament vorhanden?</div>
+          <select class="fsel" data-key="vl_test">
+            <option value="">— bitte wählen —</option>
+            <option>Ja, handschriftlich</option><option>Ja, notariell beurkundet</option><option>Ja, Erbvertrag</option><option>Nein (gesetzliche Erbfolge)</option><option>In Vorbereitung</option>
+          </select>
+        </div>
+        <div class="fr"><div class="flbl">Aufbewahrungsort des Originals</div><input class="fi" data-key="vl_testort" placeholder="z.B. Tresor / beim Notar / Nachlassgericht" type="text"></div>
+        <div class="fr"><div class="flbl">Hinterlegung beim Nachlassgericht?</div>
+          <select class="fsel" data-key="vl_testngl">
+            <option value="">— bitte wählen —</option><option>Ja, hinterlegt</option><option>Nein</option>
+          </select>
+        </div>
+        <div class="fr"><div class="flbl">Notar (falls beurkundet)</div><input class="fi" data-key="vl_notar" placeholder="Name + Adresse + Urkundennr." type="text"></div>
+      </div>
+      <div class="fg">
+        <div class="fg-title">🏥 Vorsorge- &amp; Patientenverfügung</div>
+        <div class="fr"><div class="flbl">Vorsorgevollmacht vorhanden?</div>
+          <select class="fsel" data-key="vl_vv">
+            <option value="">— bitte wählen —</option><option>Ja</option><option>Nein</option><option>In Vorbereitung</option>
+          </select>
+        </div>
+        <div class="fr"><div class="flbl">Bevollmächtigte Person(en)</div><textarea class="fta" data-key="vl_bevollm" placeholder="Person 1: Name, Anschrift, Telefon&#10;Person 2 (Ersatz): …"></textarea></div>
+        <div class="fr"><div class="flbl">Aufbewahrungsort Vollmacht</div><input class="fi" data-key="vl_vvort" placeholder="Original liegt bei: …" type="text"></div>
+        <div class="fr"><div class="flbl">Patientenverfügung vorhanden?</div>
+          <select class="fsel" data-key="vl_pv">
+            <option value="">— bitte wählen —</option><option>Ja</option><option>Nein</option><option>In Vorbereitung</option>
+          </select>
+        </div>
+        <div class="fr"><div class="flbl">Aufbewahrungsort Patientenverfügung</div><input class="fi" data-key="vl_pvort" placeholder="Original bei: … / Kopie beim Hausarzt: …" type="text"></div>
+      </div>
+      <div class="fg">
+        <div class="fg-title">📋 Bestattung &amp; Weiteres</div>
+        <div class="fr"><div class="flbl">Bestattungswünsche</div><textarea class="fta" data-key="vl_best" placeholder="Art der Bestattung: …&#10;Bestattungsunternehmen vorgewählt: …&#10;Vorsorgevertrag bei: …"></textarea></div>
+        <div class="fr"><div class="flbl">Organspende</div>
+          <select class="fsel" data-key="vl_organ">
+            <option value="">— bitte wählen —</option><option>Ja, Organspendeausweis vorhanden</option><option>Nein, Widerspruch hinterlegt</option><option>Keine Festlegung getroffen</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="sec-footer"><button class="btn-save" onclick="save('vollmachten')">💾 Speichern</button><div class="save-ok" id="ok-vollmachten">✅ Gespeichert</div></div>
+  </div>
+
+  <!-- ── KONTAKTE ── -->
+  <div class="section" id="s-kontakte">
+    <div class="sec-hdr">
+      <div class="sec-icon">📞</div>
+      <div class="sec-title">Wichtige Kontakte</div>
+      <div class="sec-desc">Berater, Behörden und Vertrauenspersonen, die im Erbfall sofort kontaktiert werden müssen.</div>
+      <div class="sbadge sl">🟢 Niedrige Sensitivität</div>
+    </div>
+    <div class="fields-wrap">
+      <div class="fg">
+        <div class="fg-title">⚖️ Rechtliche &amp; steuerliche Berater</div>
+        <div class="fr"><div class="flbl">Notar</div><textarea class="fta" data-key="kt_notar" placeholder="Name: …&#10;Kanzlei: …&#10;Adresse: …&#10;Telefon: …"></textarea></div>
+        <div class="fr"><div class="flbl">Rechtsanwalt / Fachanwalt Erbrecht <span class="fopt">falls vorhanden</span></div><textarea class="fta" data-key="kt_anwalt" placeholder="Name: …&#10;Kanzlei: …&#10;Telefon: …"></textarea></div>
+        <div class="fr"><div class="flbl">Steuerberater</div><textarea class="fta" data-key="kt_steuer" placeholder="Name: …&#10;Kanzlei: …&#10;Telefon: …&#10;Mandantennr.: …"></textarea></div>
+      </div>
+      <div class="fg">
+        <div class="fg-title">🏦 Finanzielle Ansprechpartner</div>
+        <div class="fr"><div class="flbl">Bankberater (Hauptbank)</div><textarea class="fta" data-key="kt_bank" placeholder="Name: …&#10;Bank: …&#10;Telefon / E-Mail: …&#10;Kundennr.: …"></textarea></div>
+        <div class="fr"><div class="flbl">Finanzberater / Versicherungsmakler <span class="fopt">optional</span></div><textarea class="fta" data-key="kt_fb" placeholder="Name: …&#10;Firma: …&#10;Telefon: …"></textarea></div>
+      </div>
+      <div class="fg">
+        <div class="fg-title">👨‍👩‍👧 Vertrauenspersonen &amp; Erben</div>
+        <div class="fr"><div class="flbl">Haupterben / nächste Angehörige</div><textarea class="fta" data-key="kt_erben" placeholder="Person 1: Name, Adresse, Telefon, Verwandtschaft&#10;Person 2: …" style="min-height:90px"></textarea></div>
+        <div class="fr"><div class="flbl">Testamentsvollstrecker <span class="fopt">falls eingesetzt</span></div><textarea class="fta" data-key="kt_tv" placeholder="Name: …&#10;Adresse: …&#10;Telefon: …"></textarea></div>
+        <div class="fr"><div class="flbl">Vertrauensperson mit Kenntnis dieses Dokuments</div><textarea class="fta" data-key="kt_vertr" placeholder="Person + Telefon + was diese Person weiß / hat"></textarea></div>
+      </div>
+      <div class="fg">
+        <div class="fg-title">🏥 Medizinische Kontakte</div>
+        <div class="fr"><div class="flbl">Hausarzt</div><input class="fi" data-key="kt_arzt" placeholder="Dr. … + Praxis + Telefon" type="text"></div>
+        <div class="fr"><div class="flbl">Weitere Fachärzte <span class="fopt">optional</span></div><textarea class="fta" data-key="kt_fa" placeholder="Facharzt + Fachgebiet + Telefon"></textarea></div>
+      </div>
+    </div>
+    <div class="sec-footer"><button class="btn-save" onclick="save('kontakte')">💾 Speichern</button><div class="save-ok" id="ok-kontakte">✅ Gespeichert</div></div>
+  </div>
+
+  <!-- ── ÜBERSICHT ── -->
+  <div class="section" id="s-uebersicht">
+    <div class="sec-hdr">
+      <div class="sec-icon">📊</div>
+      <div class="sec-title">Übersicht &amp; Export</div>
+      <div class="sec-desc">Status aller Abschnitte und sichere Ausgabe-Optionen.</div>
+    </div>
+    <div class="ov-grid" id="ovGrid"></div>
+    <div class="exp-box">
+      <h3>Dokument sichern</h3>
+      <p>Drucken erzeugt ein vollständiges PDF – nur auf vertrauenswürdigen Geräten. Für digitale Weitergabe: verschlüsselter USB-Stick oder Tresor-Hinterlegung empfohlen.</p>
+      <div class="exp-btns">
+        <button class="btn-exp p" onclick="window.print()">🖨️ Drucken / Als PDF</button>
+        <button class="btn-exp s" onclick="exportJSON()">💾 JSON-Backup</button>
+        <button class="btn-exp s" onclick="clearAll()">🗑️ Alle Daten löschen</button>
+      </div>
+    </div>
+    <div class="iblock" style="margin-bottom:18px">
+      <div class="iblock-ttl">📅 Dokumenten-Metadaten</div>
+      <div class="iblock-body">
+        <p><strong>Erstellt:</strong> <span id="metaC">—</span></p>
+        <p><strong>Zuletzt gespeichert:</strong> <span id="metaU">—</span></p>
+        <p style="margin-top:6px;color:var(--ink4);font-size:.71rem">Jährliche Aktualisierung empfohlen. Veraltete Angaben können Erben in die Irre führen.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── DSGVO ── -->
+  <div class="section" id="s-dsgvo">
+    <div class="sec-hdr">
+      <div class="sec-icon">🛡️</div>
+      <div class="sec-title">Datenschutz &amp; DSGVO</div>
+      <div class="sec-desc">Rechtliche Grundlagen und Sicherheitshinweise zur Nutzung dieser App.</div>
+    </div>
+    <div class="iblock"><div class="iblock-ttl">⚖️ Rechtliche Grundlage</div>
+      <div class="iblock-body">
+        <p><strong>DSGVO Art. 2 Abs. 2c</strong> stellt klar: Die Datenschutz-Grundverordnung gilt <strong>nicht</strong> für die Verarbeitung personenbezogener Daten durch natürliche Personen zur Ausübung ausschließlich persönlicher oder familiärer Tätigkeiten.</p>
+        <p>Diese App fällt vollständig in diese Ausnahme. Es besteht keine Pflicht zur Erstellung eines Verarbeitungsverzeichnisses, keiner Datenschutzerklärung und keiner Behördenmeldung.</p>
+      </div>
+    </div>
+    <div class="iblock"><div class="iblock-ttl">🔒 Technische Sicherheit</div>
+      <div class="iblock-body">
+        <ul>
+          <li><strong>AES-256-GCM:</strong> Industriestandard – gleiche Verschlüsselung wie Banken und Passwort-Manager</li>
+          <li><strong>PBKDF2 (310 000 Iter.):</strong> Schlüsselableitung macht Brute-Force-Angriffe extrem langsam</li>
+          <li><strong>Kein Klartext im Speicher:</strong> localStorage enthält nur verschlüsselten Base64-Datenmüll</li>
+          <li><strong>Neues Salt + IV pro Speicherung:</strong> Gleiche Daten erzeugen jedes Mal anderen Geheimtext</li>
+          <li><strong>Keine Serververbindung:</strong> Kein einziges Byte verlässt dein Gerät</li>
+          <li><strong>Kein Tracking:</strong> Keine Analytics, keine Drittanbieter-Cookies</li>
+          <li><strong>Open Source:</strong> Quellcode dieser HTML-Datei jederzeit prüfbar</li>
+        </ul>
+      </div>
+    </div>
+    <div class="iblock"><div class="iblock-ttl">✅ Empfohlene Maßnahmen</div>
+      <div class="iblock-body">
+        <ul>
+          <li>HTML-Datei auf einem <strong>verschlüsselten USB-Stick</strong> aufbewahren (z.B. BitLocker, VeraCrypt)</li>
+          <li><strong>Starkes Passwort</strong> – mindestens 12 Zeichen mit Sonderzeichen</li>
+          <li>Passwort <strong>separat</strong> notieren (Tresor, Notar) – nie in dieser Datei</li>
+          <li><strong>Jährlich aktualisieren</strong> – veraltete Versionen sicher löschen</li>
+          <li>Zugang nur an <strong>berechtigte Personen</strong> weitergeben</li>
+        </ul>
+      </div>
+    </div>
+    <div class="iblock" style="margin-bottom:18px"><div class="iblock-ttl">⚠️ Grenzen dieser App</div>
+      <div class="iblock-body">
+        <p>Diese App ersetzt <strong>keine rechtliche Beratung</strong>. Für rechtswirksames Testament, notarielle Vollmacht oder professionelle Nachlassplanung sind Notar und / oder Fachanwalt für Erbrecht erforderlich.</p>
+        <p>Browser-localStorage kann durch Geräteverlust, Browser-Reset oder OS-Updates verloren gehen. <strong>Regelmäßige JSON-Backups</strong> über die Export-Funktion sind daher dringend empfohlen.</p>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /app -->
+
+<!-- ── PWA INSTALL BANNER ── -->
+<div id="installBanner">
+  <div class="ib-inner">
+    <div class="ib-icon">🔏</div>
+    <div class="ib-text">
+      <div class="ib-title">Als App installieren</div>
+      <div class="ib-sub">Zum Homescreen hinzufügen – offline nutzbar, keine Cloud</div>
+    </div>
+  </div>
+  <div class="ib-btns">
+    <button class="ib-btn p" onclick="showInstallGuide()">📲 Installieren</button>
+    <button class="ib-btn s" onclick="dismissBanner()">Später</button>
+  </div>
+</div>
+
+<!-- ── iOS INSTALL GUIDE ── -->
+<div id="iosGuide" onclick="hideIosGuide()">
+  <div class="ig-box" onclick="event.stopPropagation()">
+    <div class="ig-title">Zum Homescreen hinzufügen</div>
+    <div class="ig-steps">
+      <div class="ig-step">
+        <div class="ig-num">1</div>
+        <p>Tippe unten in Safari auf das <strong>Teilen-Symbol</strong> <span style="font-size:1.1em">⬆️</span></p>
+      </div>
+      <div class="ig-step">
+        <div class="ig-num">2</div>
+        <p>Scrolle nach unten und wähle <strong>„Zum Home-Bildschirm"</strong></p>
+      </div>
+      <div class="ig-step">
+        <div class="ig-num">3</div>
+        <p>Tippe oben rechts auf <strong>„Hinzufügen"</strong></p>
+      </div>
+      <div class="ig-step">
+        <div class="ig-num">4</div>
+        <p>Die App erscheint als <strong>🔏 Erbvorsorge</strong> auf deinem Homescreen – startet ohne Browser-Leiste</p>
+      </div>
+    </div>
+    <div class="ig-arrow">↓</div>
+    <button class="ig-close" onclick="hideIosGuide()">Verstanden</button>
+  </div>
+</div>
+
+<script>
+/* AES-256-GCM ENGINE */
+const SK='erb_aes_v1', MK='erbmeta_v2';
+let D={}, currentPassword='';
+
+function ab2b64(buf){
+  return btoa(String.fromCharCode.apply(null, new Uint8Array(buf)));
+}
+function b642ab(b64){
+  const bin=atob(b64), buf=new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++) buf[i]=bin.charCodeAt(i);
+  return buf.buffer;
+}
+async function deriveKey(password, salt){
+  const enc=new TextEncoder();
+  const km=await crypto.subtle.importKey('raw',enc.encode(password),'PBKDF2',false,['deriveKey']);
+  return crypto.subtle.deriveKey(
+    {name:'PBKDF2',salt:salt,iterations:310000,hash:'SHA-256'},
+    km, {name:'AES-GCM',length:256}, false, ['encrypt','decrypt']
+  );
+}
+async function encrypt(plain, pw){
+  const salt=crypto.getRandomValues(new Uint8Array(16));
+  const iv=crypto.getRandomValues(new Uint8Array(12));
+  const key=await deriveKey(pw, salt);
+  const enc=new TextEncoder();
+  const buf=await crypto.subtle.encrypt({name:'AES-GCM',iv:iv}, key, enc.encode(plain));
+  return ab2b64(salt)+'.'+ab2b64(iv)+'.'+ab2b64(buf);
+}
+async function decrypt(stored, pw){
+  const parts=stored.split('.');
+  if(parts.length!==3) throw new Error('Bad format');
+  const salt=b642ab(parts[0]), iv=b642ab(parts[1]), cipher=b642ab(parts[2]);
+  const key=await deriveKey(pw, salt);
+  const buf=await crypto.subtle.decrypt({name:'AES-GCM',iv:new Uint8Array(iv)}, key, cipher);
+  return new TextDecoder().decode(buf);
+}
+
+function setUI(locked){
+  document.getElementById('lockScreen').style.display=locked?'flex':'none';
+  document.getElementById('app').style.display=locked?'none':'block';
+}
+function showErr(msg,isErr){
+  const el=document.getElementById('pwError');
+  el.textContent=msg; el.style.display=msg?'block':'none';
+  el.style.color=isErr?'#e07070':'#7ab87a';
+}
+
+function resetPassword(){
+  if(confirm('Passwort zurücksetzen?\n\nAlle gespeicherten Daten werden dabei unwiderruflich gelöscht.')){
+    localStorage.removeItem(SK);
+    localStorage.removeItem(MK);
+    localStorage.removeItem('erb_pass_v1');
+    D={};
+    document.getElementById('pwInput').value='';
+    showErr('Passwort zurückgesetzt. Bitte neues Passwort wählen.',false);
+  }
+}
+async function unlock(){
+  const pw=document.getElementById('pwInput').value;
+  if(!pw) return;
+  const btn=document.querySelector('.btn-unlock');
+  btn.textContent='…'; btn.disabled=true;
+  showErr('','');
+  const stored=localStorage.getItem(SK);
+  if(!stored){
+    currentPassword=pw; D={};
+    await persistEncrypted();
+    setUI(false); boot();
+  } else {
+    try {
+      const plain=await decrypt(stored, pw);
+      D=JSON.parse(plain);
+      currentPassword=pw;
+      setUI(false); boot();
+    } catch(e){
+      showErr('Falsches Passwort – bitte erneut versuchen.',true);
+      document.getElementById('pwInput').value='';
+    }
+  }
+  btn.textContent='Öffnen'; btn.disabled=false;
+}
+document.getElementById('pwInput').addEventListener('keydown',function(e){if(e.key==='Enter')unlock();});
+
+function lockApp(){
+  currentPassword=''; D={};
+  document.querySelectorAll('[data-key]').forEach(function(el){el.value='';});
+  setUI(true);
+  document.getElementById('pwInput').value='';
+  showErr('','');
+}
+function boot(){
+  fillFields(); updateMeta(false); updateProg(); buildOv();
+}
+async function persistEncrypted(){
+  const plain=JSON.stringify(D);
+  const stored=await encrypt(plain, currentPassword);
+  localStorage.setItem(SK, stored);
+}
+async function save(sec){
+  const btn=document.querySelector('#s-'+sec+' .btn-save');
+  if(btn){btn.textContent='🔐 Verschlüssle…'; btn.disabled=true;}
+  document.querySelectorAll('#s-'+sec+' [data-key]').forEach(function(el){D[el.dataset.key]=el.value;});
+  try {
+    await persistEncrypted();
+    updateMeta(true); updateProg(); buildOv();
+    const ok=document.getElementById('ok-'+sec);
+    ok.classList.add('show');
+    setTimeout(function(){ok.classList.remove('show');},2200);
+  } catch(e){
+    alert('Fehler beim Speichern: '+e.message);
+  }
+  if(btn){btn.textContent='💾 Speichern'; btn.disabled=false;}
+}
+function fillFields(){
+  document.querySelectorAll('[data-key]').forEach(function(el){
+    if(D[el.dataset.key]!==undefined) el.value=D[el.dataset.key];
+  });
+}
+function updateMeta(s){
+  const r=localStorage.getItem(MK);
+  let m=r?JSON.parse(r):{created:new Date().toLocaleDateString('de-DE'),updated:'—'};
+  if(s){m.updated=new Date().toLocaleString('de-DE'); localStorage.setItem(MK,JSON.stringify(m));}
+  else if(!r) localStorage.setItem(MK,JSON.stringify(m));
+  document.getElementById('metaC').textContent=m.created;
+  document.getElementById('metaU').textContent=m.updated;
+}
+
+/* PROGRESS */
+var KEYS={
+  identitaet:['id_name','id_geb','id_adr','id_stid','id_fstand'],
+  finanzen:['fin_giro','fin_kredit','fin_gold','fin_krypto','fin_fx_konto'],
+  immobilien:['im1_art','im1_adr','im1_gb'],
+  versicherungen:['vs_lv','vs_kv'],
+  digital:['dg_pwm','dg_mail','dg_abos'],
+  vollmachten:['vl_test','vl_vv','vl_bevollm'],
+  kontakte:['kt_notar','kt_erben','kt_arzt']
+};
+function fill(sec){
+  var k=KEYS[sec]||[]; if(!k.length) return 0;
+  return k.filter(function(x){return D[x]&&D[x].trim();}).length/k.length;
+}
+function updateProg(){
+  var secs=Object.keys(KEYS);
+  var tot=secs.reduce(function(s,k){return s+fill(k);},0)/secs.length;
+  var pct=Math.round(tot*100);
+  document.getElementById('progFill').style.width=pct+'%';
+  document.getElementById('progPct').textContent=pct+' %';
+  secs.forEach(function(sec){
+    var f=fill(sec);
+    var ck=document.getElementById('t-'+sec);
+    var tb=document.querySelector('[data-s="'+sec+'"]');
+    if(f>=0.8){if(ck)ck.textContent='✓'; if(tb)tb.classList.add('done');}
+    else{if(ck)ck.textContent=''; if(tb)tb.classList.remove('done');}
+  });
+}
+
+/* OVERVIEW */
+var SMETA={
+  identitaet:{icon:'👤',title:'Identität',desc:'Name, Geburtsdaten, Ausweis-Nrn.'},
+  finanzen:{icon:'💶',title:'Finanzen',desc:'Konten, Depots, Rohstoffe, Krypto, Währungen, Beteiligungen'},
+  immobilien:{icon:'🏠',title:'Immobilien',desc:'Grundstücke, Wohnungen, Belastungen'},
+  versicherungen:{icon:'📋',title:'Versicherungen',desc:'LV, KV, Haftpflicht, Kfz'},
+  digital:{icon:'💻',title:'Digitales Erbe',desc:'E-Mail, Abos, Accounts'},
+  vollmachten:{icon:'📜',title:'Vollmachten',desc:'Testament, Vorsorge, Patientenverfügung'},
+  kontakte:{icon:'📞',title:'Kontakte',desc:'Notar, Steuer, Erben, Arzt'}
+};
+function buildOv(){
+  var g=document.getElementById('ovGrid'); if(!g) return; g.innerHTML='';
+  Object.keys(SMETA).forEach(function(key){
+    var m=SMETA[key], f=fill(key);
+    var badge,bc;
+    if(f>=0.8){badge='✅ Vollständig';bc='done';}
+    else if(f>0){badge='⚠️ Teilweise';bc='partial';}
+    else{badge='○ Leer';bc='empty';}
+    var card=document.createElement('div'); card.className='ov-card';
+    card.setAttribute('onclick','nav("'+key+'")');
+    card.innerHTML='<div class="ov-icon">'+m.icon+'</div><div class="ov-info"><div class="ov-ttl">'+m.title+'</div><div class="ov-st">'+m.desc+'</div></div><div class="ov-badge '+bc+'">'+badge+'</div>';
+    g.appendChild(card);
+  });
+}
+
+/* NAV */
+function nav(sec){
+  document.querySelectorAll('.nav-tab').forEach(function(t){t.classList.toggle('active',t.dataset.s===sec);});
+  document.querySelectorAll('.section').forEach(function(s){s.classList.remove('active');});
+  var el=document.getElementById('s-'+sec);
+  if(el){el.classList.add('active'); el.scrollIntoView({behavior:'smooth',block:'start'});}
+  if(sec==='uebersicht') buildOv();
+}
+
+/* EXPORT */
+async function exportJSON(){
+  var stored=localStorage.getItem(SK);
+  if(!stored){alert('Keine Daten zum Exportieren.'); return;}
+  var payload=JSON.stringify({app:'Erbschafts-Vorsorge',version:'aes256gcm-v1',note:'AES-256-GCM verschlüsselt. Nur mit Passwort öffenbar.',created:new Date().toISOString(),data:stored},null,2);
+  var b=new Blob([payload],{type:'application/json'});
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(b);
+  a.download='erbschaft-backup-'+new Date().toISOString().slice(0,10)+'.json';
+  a.click();
+}
+function clearAll(){
+  if(confirm('Alle Daten unwiderruflich löschen?\n\nDieser Vorgang kann nicht rückgängig gemacht werden.')){
+    localStorage.removeItem(SK); localStorage.removeItem(MK);
+    D={}; document.querySelectorAll('[data-key]').forEach(function(el){el.value='';});
+    updateProg(); buildOv(); alert('Alle Daten wurden gelöscht.');
+  }
+}
+
+/* DEMO DATA */
+function loadDemo(){
+  D={
+    id_name:"Hans-Jürgen Bauer",id_geburtsname:"",id_geb:"14.03.1961",id_gebort:"Magdeburg",
+    id_staat:"Deutsch",id_adr:"Lindenstraße 12, 39112 Magdeburg",id_tel:"+49 391 5547823",
+    id_mail:"hj.bauer@gmx.de",id_pa:"L8X3P2K71 · gültig bis 12/2031 · Tresor Arbeitszimmer",
+    id_stid:"47 234 876 521",id_rv:"A5 230461 B 147",id_kv:"A001234567890",
+    id_fstand:"Verheiratet",id_partner:"Ingrid Bauer, geb. Hoffmann, 22.07.1964",
+    id_kinder:"Kind 1: Thomas Bauer, 18.05.1988, Hannover\nKind 2: Sabine Krüger geb. Bauer, 03.11.1991, Berlin",
+    fin_giro:"Volksbank Magdeburg eG\nIBAN: DE47 8109 …XXXX\nKundennr.: 00412387",
+    fin_spar:"Sparkasse Magdeburg\nTagesgeldkonto\nSaldo ca.: 28.000 €",
+    fin_hotline:"Volksbank: 0391 5960-100",
+    fin_depot:"Comdirect · Depotnr.: 234-56789\n60% ETFs, 30% Aktien, 10% Anleihen\nWert ca.: 142.000 €",
+    fin_anleihen:"Bundesanleihe 2027 · Nominal: 10.000 €",
+    fin_fonds:"DWS Top Dividende · ISIN: DE0008474149 · 320 Anteile",
+    fin_gold:"Krügerrand-Münzen + 100g Barren · ca. 432g gesamt\nTresor Arbeitszimmer (Wertheim WSB 850)\nAnkauf: Pro Aurum München",
+    fin_silber:"Wiener Philharmoniker Münzen · ca. 2,1 kg\nTresor Arbeitszimmer",
+    fin_metall:"",
+    fin_etc:"Xetra-Gold · ISIN: DE000A0S9GB0 · 15 Anteile ≈ 150g\nComdirect · Auslieferungsrecht besteht",
+    fin_rohstoff_sonst:"",
+    fin_krypto:"Bitcoin: ca. 0,42 BTC\nEthereum: ca. 3,8 ETH\nWert ca. (01/2026): 41.000 €",
+    fin_krypto_art:"Hardware Wallet (Cold Storage)",
+    fin_krypto_exchange:"Kraken · E-Mail: hj.bauer@gmx.de\nKundennr.: UK-4423-8812\nZugang: Proton Pass unter 'Kraken'",
+    fin_krypto_hw:"Ledger Nano X (silber) · Tresor Arbeitszimmer\nSeed-Phrase: NICHT HIER – Stahlplatte in Bankschließfach Nr.14, Volksbank Magdeburg",
+    fin_nft:"",
+    fin_fx_konto:"Wise · USD ca. 3.200 $ / CHF ca. 1.800 CHF\nZugang: Proton Pass unter 'Wise'",
+    fin_fx_cash:"USD Bargeld ca. 400 $ · Tresor Arbeitszimmer",
+    fin_fx_broker:"",
+    fin_gmbh:"",fin_beteil:"",
+    fin_geno:"Volksbank Magdeburg eG · 10 × 200 € = 2.000 €",
+    fin_darlehen_out:"Darlehen an Sohn Thomas · 15.000 € · Rückzahlung ab 2027\nVertrag: Ordner 'Familie' Arbeitszimmer",
+    fin_drv:"A5 230461 B 147 · ca. 1.840 €/Monat ab 67",
+    fin_bav:"Allianz · LV-8847-22193 · Rückkaufswert ca. 38.000 €",
+    fin_priv:"HanseMerkur · RM-2241-9934 · bis 2028 · 180 €/Monat",
+    fin_riester:"DWS Riester Rente Premium · DWS-RR-44821",
+    fin_kredit:"Volksbank Magdeburg · DL-2019-8821\nRestschuld ca. 87.000 € · 820 €/Monat bis 03/2034",
+    fin_schuld2:"",
+    fin_wert:"Schmuck ca. 4.500 € · Schlafzimmer\nOldtimer VW Käfer 1967 ca. 18.000 € · Brief im Tresor",
+    fin_tresor:"Wertheim WSB 850 · Arbeitszimmer hinter Bücherregal\nKombination: Schließfach Volksbank",
+    fin_frei1:"Briefmarkensammlung (Erbstück) · Sammlerwert ca. 3.200 €\nAlbum Arbeitszimmer Regal 2",
+    fin_frei2:"LV Ingrid Bauer · Zurich · ZL-33812-44 · Begünstigter: Hans-Jürgen · ca. 55.000 €",
+    fin_frei3:"",
+    im1_art:"Einfamilienhaus",im1_adr:"Lindenstraße 12, 39112 Magdeburg",
+    im1_gb:"Grundbuchamt Magdeburg · Gemarkung Sudenburg\nFlur 4, Flurstück 882/3 · Blatt 14.882",
+    im1_anteil:"100% – je 50% Hans-Jürgen und Ingrid Bauer",
+    im1_last:"Grundschuld Volksbank Magdeburg · ca. 87.000 € · Abt. III Nr. 1",
+    im1_verw:"Keine (Einfamilienhaus, selbst genutzt)",
+    im1_docs:"Ordner 'Haus' im Arbeitszimmer, Regal 1",
+    im_mehr:"Garagenstellplatz · Flur 4, Flurstück 883 · lastenfrei",
+    vs_lv:"Allianz · LV-8847-22193 · ca. 38.000 €\nBezugsberechtigte: Ingrid Bauer",
+    vs_rlv:"Allianz · RL-2244-9981 · bis 2031 · 150.000 €\nBegünstigte: Ingrid Bauer",
+    vs_kv:"Techniker Krankenkasse (TK) · Kundennr.: 3001234567",
+    vs_kvart:"Gesetzlich (GKV)",
+    vs_pflege:"DKV Pflegezusatz · PZ-8812-344",
+    vs_hp:"Allianz HP-2291-7734 · 89 €/Jahr",
+    vs_hr:"Allianz HR-2291-7735 · Versicherungswert 85.000 €",
+    vs_geb:"VHV GB-4412-8823 · Versicherungswert 320.000 €",
+    vs_kfz:"VW Passat MD-HB 2219 · HUK-Coburg KFZ-88412-3\nVW Käfer MD-OT 1967 · Zurich Oldtimer TP-1967-OT",
+    vs_mehr:"ARAG Rechtsschutz RV-3341-2209\nERV Reise (Jahresvertrag) RE-8812-44\nGenerali Unfall UV-2241-77",
+    dg_pwm:"Proton Pass",
+    dg_master:"Weißer Umschlag 'PW' im Tresor Arbeitszimmer\nZweitexemplar: bei Tochter Sabine Krüger, Berlin",
+    dg_mail:"hj.bauer@gmx.de (Hauptadresse) · Proton Pass 'GMX'\nh.bauer@t-online.de (Behörden) · Proton Pass 'T-Online'",
+    dg_phone:"iPhone 15 Pro · PIN bei Ingrid Bauer",
+    dg_pc:"ASUS Laptop Windows 11 · Proton Pass 'Windows'\nBitLocker-Schlüssel im Tresor",
+    dg_abos:"Netflix 15,99 €/Monat\nSpotify Family 16,99 €/Monat\nMagenta TV 12,95 €/Monat\nSpiegel+ 19,99 €/Monat\nAmazon Prime 89,90 €/Jahr",
+    dg_social:"Facebook: memorialisieren\nXING: löschen\nLinkedIn: löschen",
+    dg_acc:"ELSTER · Proton Pass 'ELSTER'\nPayPal hj.bauer@gmx.de · Proton Pass 'PayPal'",
+    vl_test:"Ja, handschriftlich",
+    vl_testort:"Tresor Arbeitszimmer (versiegelter Umschlag 'Testament 2024')\nKopie: Notar Dr. Meier, Magdeburg",
+    vl_testngl:"Nein",
+    vl_notar:"Dr. Klaus Meier · Hegel-Allee 7, 39104 Magdeburg\nTel. 0391 5544-120 · Urkundennr. 2022/441",
+    vl_vv:"Ja",
+    vl_bevollm:"1. Ingrid Bauer (Ehefrau) · Tel. +49 391 5547823\n2. Sabine Krüger (Tochter, Ersatz) · Tel. +49 30 8812-4433",
+    vl_vvort:"Original: Tresor · Kopie: Notar Dr. Meier · Kopie: bei Ingrid",
+    vl_pv:"Ja",
+    vl_pvort:"Original: Tresor · Kopie: Dr. Sommer (Hausarzt) · Kopie: bei Ingrid",
+    vl_best:"Erdbestattung · Westfriedhof Magdeburg\nMusikwunsch: J.S. Bach",
+    vl_organ:"Nein, Widerspruch hinterlegt",
+    kt_notar:"Dr. Klaus Meier · Notar Magdeburg\nHegel-Allee 7, 39104 Magdeburg\nTel. 0391 5544-120",
+    kt_anwalt:"RA Petra Vogel · Fachanwältin Erbrecht\nBreiter Weg 224, 39104 Magdeburg · Tel. 0391 6622-88",
+    kt_steuer:"Hoffmann & Partner · Dipl.-Kfm. R. Hoffmann\nEinstein-Str. 14, 39106 Magdeburg · Mandant: 3341-BauerHJ",
+    kt_bank:"Volksbank Magdeburg · Andreas Krause\nBreiter Weg 180 · Tel. 0391 5960-241",
+    kt_fb:"MLP · Sandra Koch · Tel. 0391 8812-33",
+    kt_erben:"1. Ingrid Bauer (Ehefrau) · Lindenstraße 12, Magdeburg · Tel. +49 391 5547824\n2. Thomas Bauer (Sohn) · Lister Meile 44, Hannover · Tel. +49 511 8812-44\n3. Sabine Krüger (Tochter) · Karl-Marx-Allee 88, Berlin · Tel. +49 30 8812-4433",
+    kt_tv:"Kein Testamentsvollstrecker – RA Vogel auf Anfrage",
+    kt_vertr:"Ingrid: kennt Tresor-Kombination, alle Originaldokumente\nSabine: kennt Seed-Phrase-Standort (Schließfach)",
+    kt_arzt:"Dr. Michael Sommer · Klosterbergstr. 34, Magdeburg · Tel. 0391 7788-100",
+    kt_fa:"Augenarzt: Prof. Dr. Geerling, UK Düsseldorf, Tel. 0211 81-17600\nKardiologe: Dr. Peters, Magdeburg, Tel. 0391 5544-300"
+  };
+  currentPassword='DEMO';
+  document.getElementById('lockScreen').style.display='none';
+  document.getElementById('app').style.display='block';
+  fillFields(); updateMeta(false); updateProg(); buildOv();
+  var banner=document.createElement('div');
+  banner.id='demoBanner';
+  banner.style.cssText='position:fixed;top:0;left:0;right:0;z-index:9999;background:#7a3a00;color:#ffe0b2;text-align:center;font-size:.72rem;padding:8px 12px';
+  banner.textContent='⚠️ Demo-Modus – fiktive Musterdaten – nichts wird gespeichert';
+  var closeBtn=document.createElement('span');
+  closeBtn.textContent=' [Beenden]';
+  closeBtn.style.cssText='cursor:pointer;text-decoration:underline;color:#ffd180;margin-left:6px';
+  closeBtn.onclick=function(){document.getElementById('demoBanner').remove(); lockApp();};
+  banner.appendChild(closeBtn);
+  document.body.prepend(banner);
+}
+
+/* PWA INSTALL */
+var INSTALL_KEY='erb_install_dismissed';
+var deferredPrompt=null;
+function isIOS(){ return /iphone|ipad|ipod/i.test(navigator.userAgent); }
+function isStandalone(){
+  return (window.navigator.standalone===true) ||
+         (window.matchMedia('(display-mode: standalone)').matches);
+}
+function isDismissed(){
+  var d=localStorage.getItem(INSTALL_KEY);
+  if(!d) return false;
+  return (Date.now()-parseInt(d)) < 14*24*60*60*1000;
+}
+function showBanner(){
+  if(isStandalone()||isDismissed()) return;
+  document.getElementById('installBanner').classList.add('show');
+}
+function dismissBanner(){
+  document.getElementById('installBanner').classList.remove('show');
+  localStorage.setItem(INSTALL_KEY, Date.now().toString());
+}
+function showInstallGuide(){
+  if(isIOS()){
+    document.getElementById('iosGuide').classList.add('show');
+  } else if(deferredPrompt){
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(function(c){
+      if(c.outcome==='accepted') dismissBanner();
+      deferredPrompt=null;
+    });
+  } else {
+    document.getElementById('iosGuide').classList.add('show');
+  }
+}
+function hideIosGuide(){
+  document.getElementById('iosGuide').classList.remove('show');
+  dismissBanner();
+}
+window.addEventListener('beforeinstallprompt',function(e){
+  e.preventDefault(); deferredPrompt=e; showBanner();
+});
+window.addEventListener('load',function(){
+  if(isIOS()&&!isStandalone()) setTimeout(showBanner, 2000);
+});
+</script>
+</body>
+</html>

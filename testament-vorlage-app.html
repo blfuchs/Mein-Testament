@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+<title>Testament-Vorlage</title>
+
+<!-- iOS PWA -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Testament">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#1a1510">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%231a1510'/%3E%3Ccircle cx='90' cy='90' r='58' fill='%23b8860b'/%3E%3Ctext x='90' y='112' font-size='62' text-anchor='middle'%3E%F0%9F%93%9C%3C/text%3E%3C/svg%3E">
+
+<style>
+:root{
+  --cream:#f7f3ee;--cream2:#efe9e0;--cream3:#e4dbd0;
+  --ink:#1a1510;--ink2:#3d3428;--ink3:#6b5e4e;--ink4:#9c8c7a;
+  --gold:#b8860b;--gold2:#d4a520;
+  --green:#1a4a2e;--border:#d4c8b8;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:Georgia,'Times New Roman',serif;
+  background:var(--cream);color:var(--ink);
+  min-height:100vh;font-size:16px;
+  -webkit-tap-highlight-color:transparent;
+}
+
+/* HEADER */
+.hdr{
+  background:var(--ink);
+  padding:14px 18px;
+  padding-top:calc(14px + env(safe-area-inset-top));
+  position:sticky;top:0;z-index:100;
+  display:flex;align-items:center;gap:11px;
+}
+.hdr-icon{
+  width:34px;height:34px;border-radius:50%;
+  background:linear-gradient(135deg,var(--gold),var(--gold2));
+  display:flex;align-items:center;justify-content:center;
+  font-size:1rem;flex-shrink:0;
+}
+.hdr-title{color:var(--cream);font-size:1.05rem;font-weight:700}
+.hdr-sub{color:var(--ink4);font-size:.62rem;font-family:-apple-system,sans-serif}
+
+/* PROGRESS */
+.prog{background:var(--cream2);border-bottom:1px solid var(--border);padding:8px 18px}
+.prog-lbl{display:flex;justify-content:space-between;font-size:.68rem;color:var(--ink4);margin-bottom:5px;font-family:-apple-system,sans-serif}
+.prog-track{height:4px;background:var(--cream3);border-radius:2px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:2px;transition:width .4s ease}
+
+/* CONTENT */
+.wrap{max-width:680px;margin:0 auto;padding:14px 16px 140px}
+
+.intro{
+  background:#fffbf0;border:1px solid #e8d48a;border-radius:10px;
+  padding:12px 14px;margin-bottom:16px;
+  font-size:.78rem;color:#5a4a00;line-height:1.6;
+  font-family:-apple-system,sans-serif;
+}
+.intro strong{color:#7a6300}
+
+.sec{
+  background:white;border:1px solid var(--border);
+  border-radius:12px;margin-bottom:14px;overflow:hidden;
+}
+.sec-h{
+  padding:12px 15px;background:var(--cream2);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:9px;
+}
+.sec-num{
+  width:24px;height:24px;border-radius:50%;
+  background:linear-gradient(135deg,var(--gold),var(--gold2));
+  display:flex;align-items:center;justify-content:center;
+  font-size:.7rem;font-weight:700;color:var(--ink);
+  flex-shrink:0;font-family:-apple-system,sans-serif;
+}
+.sec-t{font-size:.92rem;font-weight:700;color:var(--ink2)}
+.sec-done{
+  margin-left:auto;font-size:.85rem;
+  opacity:0;transition:opacity .3s;
+}
+.sec-done.show{opacity:1}
+
+.sec-body{padding:6px 15px 14px}
+
+.f{margin-top:11px}
+.f-lbl{
+  font-size:.72rem;font-weight:600;color:var(--ink3);
+  margin-bottom:5px;font-family:-apple-system,sans-serif;
+  display:flex;justify-content:space-between;
+}
+.f-opt{font-size:.6rem;color:var(--ink4);font-style:italic;font-weight:400}
+.fi,.fta,.fsel{
+  width:100%;background:var(--cream);
+  border:1px solid var(--border);border-radius:8px;
+  padding:10px 12px;font-size:16px;color:var(--ink);
+  font-family:Georgia,serif;outline:none;
+  transition:border-color .15s;
+  -webkit-appearance:none;appearance:none;
+}
+.fi:focus,.fta:focus,.fsel:focus{border-color:var(--gold);background:white}
+.fta{min-height:72px;resize:vertical;line-height:1.5}
+.fsel{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%239c8c7a'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center;
+  padding-right:30px;
+}
+.f-hint{font-size:.66rem;color:var(--ink4);margin-top:4px;line-height:1.4;font-family:-apple-system,sans-serif}
+
+/* SAVE INDICATOR */
+.saveinfo{
+  text-align:center;font-size:.66rem;color:var(--ink4);
+  margin:4px 0 12px;font-family:-apple-system,sans-serif;
+}
+.saveinfo .dot{
+  display:inline-block;width:7px;height:7px;border-radius:50%;
+  background:var(--green);margin-right:5px;vertical-align:middle;
+}
+
+/* ACTION BAR (fixed bottom) */
+.actionbar{
+  position:fixed;bottom:0;left:0;right:0;z-index:200;
+  background:var(--ink);
+  padding:12px 16px;
+  padding-bottom:calc(12px + env(safe-area-inset-bottom));
+  display:flex;gap:9px;
+  box-shadow:0 -4px 20px rgba(26,21,16,.25);
+}
+.ab-btn{
+  flex:1;border:none;border-radius:10px;
+  padding:13px 10px;font-size:.85rem;font-weight:700;
+  cursor:pointer;font-family:-apple-system,sans-serif;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+}
+.ab-btn.p{background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--ink)}
+.ab-btn.s{background:rgba(255,255,255,.1);color:var(--cream);border:1px solid rgba(255,255,255,.18)}
+
+/* TOAST */
+#toast{
+  position:fixed;left:50%;bottom:110px;transform:translateX(-50%) translateY(20px);
+  background:var(--green);color:white;
+  border-radius:10px;padding:11px 20px;
+  font-size:.8rem;font-weight:600;font-family:-apple-system,sans-serif;
+  opacity:0;pointer-events:none;transition:all .3s;
+  z-index:300;white-space:nowrap;
+  box-shadow:0 4px 16px rgba(0,0,0,.25);
+}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* MENU SHEET */
+#menuSheet{
+  display:none;position:fixed;inset:0;z-index:400;
+  background:rgba(0,0,0,.5);
+  align-items:flex-end;justify-content:center;
+}
+#menuSheet.show{display:flex}
+.ms-box{
+  background:white;border-radius:18px 18px 0 0;
+  width:100%;max-width:680px;
+  padding:20px 18px;
+  padding-bottom:calc(20px + env(safe-area-inset-bottom));
+}
+.ms-title{font-size:.95rem;font-weight:700;color:var(--ink2);margin-bottom:14px;text-align:center}
+.ms-btn{
+  width:100%;border:1px solid var(--border);border-radius:10px;
+  background:var(--cream);padding:13px;margin-bottom:9px;
+  font-size:.85rem;color:var(--ink2);cursor:pointer;
+  font-family:-apple-system,sans-serif;font-weight:600;
+  display:flex;align-items:center;gap:10px;
+}
+.ms-btn.danger{color:#8b2020;border-color:#e8c4c4;background:#fdf5f5}
+.ms-cancel{
+  width:100%;border:none;border-radius:10px;
+  background:var(--ink);color:var(--cream);padding:13px;
+  font-size:.85rem;font-weight:700;cursor:pointer;
+  font-family:-apple-system,sans-serif;margin-top:4px;
+}
+
+/* INSTALL HINT */
+#installHint{
+  display:none;
+  background:var(--ink);border-radius:12px;
+  padding:14px 16px;margin-bottom:16px;
+  color:var(--cream);
+}
+#installHint.show{display:block}
+.ih-t{font-size:.85rem;font-weight:700;margin-bottom:5px}
+.ih-s{font-size:.72rem;color:var(--ink4);line-height:1.55;font-family:-apple-system,sans-serif}
+.ih-s strong{color:var(--gold2)}
+.ih-x{
+  float:right;background:none;border:none;color:var(--ink4);
+  font-size:1.1rem;cursor:pointer;padding:0 0 6px 10px;
+}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-icon">📜</div>
+  <div>
+    <div class="hdr-title">Testament-Vorlage</div>
+    <div class="hdr-sub">Entwurf wird automatisch lokal gespeichert</div>
+  </div>
+</div>
+
+<div class="prog">
+  <div class="prog-lbl"><span>Ausgefüllt</span><span id="progPct">0 %</span></div>
+  <div class="prog-track"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+</div>
+
+<div class="wrap">
+
+  <div id="installHint">
+    <button class="ih-x" onclick="hideInstall()">✕</button>
+    <div class="ih-t">📲 Als App installieren</div>
+    <div class="ih-s">In Safari: <strong>Teilen-Symbol</strong> ⬆️ tippen → <strong>„Zum Home-Bildschirm"</strong> → Hinzufügen. Danach startet die Vorlage wie eine App – jederzeit, auch offline.</div>
+  </div>
+
+  <div class="intro">
+    <strong>So funktioniert es:</strong> Felder ausfüllen (alles wird automatisch auf diesem Gerät gespeichert – keine Cloud). Danach unten <strong>„An Claude senden"</strong> tippen – der fertige Text wird geteilt oder kopiert. Claude erstellt daraus dein Testament. Leere Felder werden automatisch weggelassen. Keine Kontonummern oder Passwörter nötig.
+  </div>
+
+  <div class="saveinfo" id="saveInfo"><span class="dot"></span>Automatisch gespeichert</div>
+
+  <!-- 1 PERSON -->
+  <div class="sec" data-sec="1">
+    <div class="sec-h"><div class="sec-num">1</div><div class="sec-t">Meine Person</div><div class="sec-done" id="d1">✅</div></div>
+    <div class="sec-body">
+      <div class="f"><div class="f-lbl">Vollständiger Name</div><input class="fi" data-k="name" type="text" placeholder="Vorname Nachname"></div>
+      <div class="f"><div class="f-lbl">Geburtsdatum</div><input class="fi" data-k="geb" type="text" placeholder="TT.MM.JJJJ"></div>
+      <div class="f"><div class="f-lbl">Geburtsort</div><input class="fi" data-k="gebort" type="text" placeholder="Stadt"></div>
+      <div class="f"><div class="f-lbl">Wohnort</div><input class="fi" data-k="wohnort" type="text" placeholder="Straße, PLZ Ort"></div>
+      <div class="f"><div class="f-lbl">Familienstand</div>
+        <select class="fsel" data-k="fstand">
+          <option value="">— wählen —</option>
+          <option>Ledig</option><option>Verheiratet</option>
+          <option>Eingetragene Lebenspartnerschaft</option>
+          <option>Geschieden</option><option>Verwitwet</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2 PARTNER -->
+  <div class="sec" data-sec="2">
+    <div class="sec-h"><div class="sec-num">2</div><div class="sec-t">Ehepartner / Lebenspartner</div><div class="sec-done" id="d2">✅</div></div>
+    <div class="sec-body">
+      <div class="f"><div class="f-lbl">Name <span class="f-opt">falls vorhanden</span></div><input class="fi" data-k="p_name" type="text" placeholder="Name, ggf. Geburtsname"></div>
+      <div class="f"><div class="f-lbl">Geburtsdatum</div><input class="fi" data-k="p_geb" type="text" placeholder="TT.MM.JJJJ"></div>
+      <div class="f"><div class="f-lbl">Besteht bereits ein Berliner Testament?</div>
+        <select class="fsel" data-k="p_berliner">
+          <option value="">— wählen —</option>
+          <option>Nein</option><option>Ja</option><option>Geplant</option>
+        </select>
+        <div class="f-hint">Wichtig: Ein bestehendes gemeinschaftliches Testament kann ein Einzeltestament rechtlich blockieren (§ 2271 BGB)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3 KINDER -->
+  <div class="sec" data-sec="3">
+    <div class="sec-h"><div class="sec-num">3</div><div class="sec-t">Kinder</div><div class="sec-done" id="d3">✅</div></div>
+    <div class="sec-body">
+      <div class="f"><div class="f-lbl">Kind 1 <span class="f-opt">Name, Geburtsdatum, Wohnort</span></div><input class="fi" data-k="k1" type="text" placeholder="z.B. Max Mustermann, 01.01.1990, Berlin"></div>
+      <div class="f"><div class="f-lbl">Kind 2</div><input class="fi" data-k="k2" type="text"></div>
+      <div class="f"><div class="f-lbl">Kind 3</div><input class="fi" data-k="k3" type="text"></div>
+    </div>
+  </div>
+
+  <!-- 4 HAUPTERBE -->
+  <div class="sec" data-sec="4">
+    <div class="sec-h"><div class="sec-num">4</div><div class="sec-t">Erbeinsetzung</div><div class="sec-done" id="d4">✅</div></div>
+    <div class="sec-body">
+      <div class="f"><div class="f-lbl">Wer soll Haupterbe werden?</div><input class="fi" data-k="erbe" type="text" placeholder="z.B. mein Ehepartner / meine Kinder zu gleichen Teilen"></div>
+      <div class="f"><div class="f-lbl">Ersatzerbe <span class="f-opt">falls Haupterbe wegfällt</span></div><input class="fi" data-k="ersatz" type="text" placeholder="z.B. meine Kinder je zur Hälfte"></div>
+    </div>
+  </div>
+
+  <!-- 5 IMMOBILIEN -->
+  <div class="sec" data-sec="5">
+    <div class="sec-h"><div class="sec-num">5</div><div class="sec-t">Immobilien</div><div class="sec-done" id="d5">✅</div></div>
+    <div class="sec-body">
+      <div class="f"><div class="f-lbl">Objekt 1 <span class="f-opt">Art, Ort, Eigentumsanteil</span></div><textarea class="fta" data-k="im1" placeholder="z.B. Einfamilienhaus in Lindhorst, 50% Miteigentum mit Ehefrau"></textarea></div>
+      <div class="f"><div class="f-lbl">Besonderheit <span class="f-opt">Wohnrecht, Nießbrauch o.ä.</span></div><input class="fi" data-k="im1_bes" type="text" placeholder="z.B. lebenslanges Wohnrecht für Ehepartner gewünscht"></div>
+      <div class="f"><div class="f-lbl">Weitere Objekte <span class="f-opt">optional</span></div><textarea class="fta" data-k="im2"></textarea></div>
+    </div>
+  </div>
+
+  <!-- 6 VERMÖGEN -->
+  <div class="sec" data-sec="6">
+    <div class="sec-h"><div class="sec-num">6</div><div class="sec-t">Wesentliche Vermögenswerte</div><div class="sec-done" id="d6">✅</div></div>
+    <div class="sec-body">
+      <div class="f-hint" style="margin-top:8px">Keine Kontonummern nötig – nur Art und ungefährer Wert</div>
+      <div class="f"><div class="f-lbl">Wertpapiere / Depot</div><textarea class="fta" data-k="v_depot" placeholder="z.B. Depot bei der Volksbank, ca. 80.000 €"></textarea></div>
+      <div class="f"><div class="f-lbl">Edelmetalle</div><textarea class="fta" data-k="v_metall" placeholder="z.B. Gold ca. 400 g, im Tresor"></textarea></div>
+      <div class="f"><div class="f-lbl">Kryptowährungen</div><textarea class="fta" data-k="v_krypto" placeholder="z.B. Bitcoin auf Hardware Wallet, Seed-Phrase im Schließfach"></textarea></div>
+      <div class="f"><div class="f-lbl">Sonstiges <span class="f-opt">Fahrzeuge, Schmuck, Sammlungen</span></div><textarea class="fta" data-k="v_sonst"></textarea></div>
+    </div>
+  </div>
+
+  <!-- 7 DARLEHEN -->
+  <div class="sec" data-sec="7">
+    <div class="sec-h"><div class="sec-num">7</div><div class="sec-t">Privatdarlehen / Forderungen</div><div class="sec-done" id="d7">✅</div></div>
+    <div class="sec-body">
+      <div class="f"><div class="f-lbl">Geld das andere mir schulden <span class="f-opt">soll es erlassen werden?</span></div><textarea class="fta" data-k="darlehen" placeholder="z.B. Darlehen an Sohn, 10.000 €, soll erlassen werden"></textarea></div>
+    </div>
+  </div>
+
+  <!-- 8 VERMÄCHTNISSE -->
+  <div class="sec" data-sec="8">
+    <div class="sec-h"><div class="sec-num">8</div><div class="sec-t">Besondere Vermächtnisse</div><div class="sec-done" id="d8">✅</div></div>
+    <div class="sec-body">
+      <div class="f-hint" style="margin-top:8px">Wer soll welchen konkreten Gegenstand erhalten?</div>
+      <div class="f"><div class="f-lbl">Vermächtnis 1</div><input class="fi" data-k="vm1" type="text" placeholder="z.B. Briefmarkensammlung → Sohn Thomas"></div>
+      <div class="f"><div class="f-lbl">Vermächtnis 2</div><input class="fi" data-k="vm2" type="text"></div>
+      <div class="f"><div class="f-lbl">Vermächtnis 3</div><input class="fi" data-k="vm3" type="text"></div>
+    </div>
+  </div>
+
+  <!-- 9 PFLICHTTEIL -->
+  <div class="sec" data-sec="9">
+    <div class="sec-h"><div class="sec-num">9</div><div class="sec-t">Pflichtteilsregelung</div><div class="sec-done" id="d9">✅</div></div>
+    <div class="sec-body">
+      <div class="f"><div class="f-lbl">Pflichtteilsstrafklausel gewünscht?</div>
+        <select class="fsel" data-k="pf_klausel">
+          <option value="">— wählen —</option>
+          <option>Ja</option><option>Nein</option><option>Bitte beraten</option>
+        </select>
+        <div class="f-hint">Schützt den überlebenden Partner: Wer vorzeitig den Pflichtteil fordert, erhält später ebenfalls nur den Pflichtteil</div>
+      </div>
+      <div class="f"><div class="f-lbl">Besondere Wünsche <span class="f-opt">optional</span></div><textarea class="fta" data-k="pf_wunsch"></textarea></div>
+    </div>
+  </div>
+
+  <!-- 10 VOLLSTRECKER -->
+  <div class="sec" data-sec="10">
+    <div class="sec-h"><div class="sec-num">10</div><div class="sec-t">Testamentsvollstrecker</div><div class="sec-done" id="d10">✅</div></div>
+    <div class="sec-body">
+      <div class="f"><div class="f-lbl">Testamentsvollstrecker gewünscht?</div>
+        <select class="fsel" data-k="tv">
+          <option value="">— wählen —</option>
+          <option>Nein</option><option>Ja</option><option>Bitte beraten</option>
+        </select>
+      </div>
+      <div class="f"><div class="f-lbl">Falls ja: Name, Beruf, Ort</div><input class="fi" data-k="tv_name" type="text"></div>
+    </div>
+  </div>
+
+  <!-- 11 VOLLMACHT -->
+  <div class="sec" data-sec="11">
+    <div class="sec-h"><div class="sec-num">11</div><div class="sec-t">Vollmachten</div><div class="sec-done" id="d11">✅</div></div>
+    <div class="sec-body">
+      <div class="f"><div class="f-lbl">Vorsorgevollmacht vorhanden?</div>
+        <select class="fsel" data-k="vv">
+          <option value="">— wählen —</option>
+          <option>Ja</option><option>Nein</option><option>In Vorbereitung</option>
+        </select>
+      </div>
+      <div class="f"><div class="f-lbl">Bevollmächtigte Person</div><input class="fi" data-k="vv_person" type="text"></div>
+      <div class="f"><div class="f-lbl">Patientenverfügung vorhanden?</div>
+        <select class="fsel" data-k="pv">
+          <option value="">— wählen —</option>
+          <option>Ja</option><option>Nein</option><option>In Vorbereitung</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- 12 BESTATTUNG -->
+  <div class="sec" data-sec="12">
+    <div class="sec-h"><div class="sec-num">12</div><div class="sec-t">Bestattungswünsche</div><div class="sec-done" id="d12">✅</div></div>
+    <div class="sec-body">
+      <div class="f"><div class="f-lbl">Art der Bestattung</div>
+        <select class="fsel" data-k="b_art">
+          <option value="">— wählen —</option>
+          <option>Erdbestattung</option><option>Feuerbestattung</option>
+          <option>Seebestattung</option><option>Baumbestattung</option>
+          <option>Keine Festlegung</option>
+        </select>
+      </div>
+      <div class="f"><div class="f-lbl">Ort <span class="f-opt">Friedhof o.ä.</span></div><input class="fi" data-k="b_ort" type="text"></div>
+      <div class="f"><div class="f-lbl">Besondere Wünsche <span class="f-opt">Musik, Trauerfeier</span></div><textarea class="fta" data-k="b_wunsch"></textarea></div>
+      <div class="f"><div class="f-lbl">Organspende</div>
+        <select class="fsel" data-k="b_organ">
+          <option value="">— wählen —</option>
+          <option>Ja, Organspendeausweis vorhanden</option>
+          <option>Nein, Widerspruch</option>
+          <option>Nicht festgelegt</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- 13 AUFBEWAHRUNG -->
+  <div class="sec" data-sec="13">
+    <div class="sec-h"><div class="sec-num">13</div><div class="sec-t">Aufbewahrung</div><div class="sec-done" id="d13">✅</div></div>
+    <div class="sec-body">
+      <div class="f"><div class="f-lbl">Wo soll das Original-Testament liegen?</div><input class="fi" data-k="a_ort" type="text" placeholder="z.B. Tresor / Bankschließfach / Notar"></div>
+      <div class="f"><div class="f-lbl">Notar <span class="f-opt">falls vorhanden: Name + Ort</span></div><input class="fi" data-k="a_notar" type="text"></div>
+      <div class="f"><div class="f-lbl">Hinterlegung beim Nachlassgericht geplant?</div>
+        <select class="fsel" data-k="a_gericht">
+          <option value="">— wählen —</option>
+          <option>Ja</option><option>Nein</option><option>Bitte beraten</option>
+        </select>
+        <div class="f-hint">Amtliche Verwahrung kostet einmalig 75 € und garantiert dass das Testament gefunden wird</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 14 HINWEISE -->
+  <div class="sec" data-sec="14">
+    <div class="sec-h"><div class="sec-num">14</div><div class="sec-t">Besondere Hinweise</div><div class="sec-done" id="d14">✅</div></div>
+    <div class="sec-body">
+      <div class="f"><div class="f-lbl">Alles was sonst noch geregelt werden soll</div><textarea class="fta" data-k="hinweise" style="min-height:100px"></textarea></div>
+    </div>
+  </div>
+
+  <div class="intro" style="margin-top:18px">
+    <strong>⚖️ Rechtlicher Hinweis:</strong> Claude erstellt einen Entwurf. Für Rechtswirksamkeit muss das Testament vollständig <strong>eigenhändig handgeschrieben und unterschrieben</strong> werden (§ 2247 BGB) – oder notariell beurkundet. Bei komplexen Vermögensverhältnissen Notar oder Fachanwalt hinzuziehen.
+  </div>
+
+</div>
+
+<!-- ACTION BAR -->
+<div class="actionbar">
+  <button class="ab-btn s" onclick="openMenu()">⚙️ Mehr</button>
+  <button class="ab-btn p" onclick="sendToClaude()">📤 An Claude senden</button>
+</div>
+
+<!-- TOAST -->
+<div id="toast">✓ Erledigt</div>
+
+<!-- MENU SHEET -->
+<div id="menuSheet" onclick="closeMenu()">
+  <div class="ms-box" onclick="event.stopPropagation()">
+    <div class="ms-title">Optionen</div>
+    <button class="ms-btn" onclick="copyText()">📋 Text in Zwischenablage kopieren</button>
+    <button class="ms-btn" onclick="previewText()">👁️ Text-Vorschau anzeigen</button>
+    <button class="ms-btn danger" onclick="clearData()">🗑️ Alle Eingaben löschen</button>
+    <button class="ms-cancel" onclick="closeMenu()">Abbrechen</button>
+  </div>
+</div>
+
+<script>
+var SK = 'testament_vorlage_v1';
+var D = {};
+var saveTimer = null;
+
+/* ── LOAD ── */
+function load(){
+  try {
+    var r = localStorage.getItem(SK);
+    if(r) D = JSON.parse(r);
+  } catch(e){ D = {}; }
+  var els = document.querySelectorAll('[data-k]');
+  for(var i=0; i<els.length; i++){
+    var k = els[i].getAttribute('data-k');
+    if(D[k] !== undefined) els[i].value = D[k];
+  }
+  updateProg();
+}
+
+/* ── AUTOSAVE ── */
+function scheduleSave(){
+  if(saveTimer) clearTimeout(saveTimer);
+  saveTimer = setTimeout(doSave, 600);
+}
+function doSave(){
+  var els = document.querySelectorAll('[data-k]');
+  for(var i=0; i<els.length; i++){
+    D[els[i].getAttribute('data-k')] = els[i].value;
+  }
+  try { localStorage.setItem(SK, JSON.stringify(D)); } catch(e){}
+  updateProg();
+  var si = document.getElementById('saveInfo');
+  si.style.opacity = '1';
+}
+
+/* ── PROGRESS ── */
+var SECS = {
+  1:['name','geb','wohnort'], 2:['p_name'], 3:['k1'],
+  4:['erbe'], 5:['im1'], 6:['v_depot','v_metall','v_krypto','v_sonst'],
+  7:['darlehen'], 8:['vm1'], 9:['pf_klausel'], 10:['tv'],
+  11:['vv'], 12:['b_art'], 13:['a_ort'], 14:['hinweise']
+};
+function secFilled(n){
+  var keys = SECS[n];
+  for(var i=0; i<keys.length; i++){
+    if(D[keys[i]] && D[keys[i]].trim()) return true;
+  }
+  return false;
+}
+function updateProg(){
+  var total = 0, filled = 0;
+  for(var n in SECS){
+    total++;
+    var ok = secFilled(n);
+    if(ok) filled++;
+    var d = document.getElementById('d'+n);
+    if(d){ if(ok) d.classList.add('show'); else d.classList.remove('show'); }
+  }
+  var pct = Math.round(filled/total*100);
+  document.getElementById('progFill').style.width = pct+'%';
+  document.getElementById('progPct').textContent = pct+' %';
+}
+
+/* ── TEXT GENERATION ── */
+function val(k){ return (D[k]||'').trim(); }
+function buildText(){
+  var L = [];
+  L.push('TESTAMENT-EINGABE');
+  L.push('Bitte erstelle aus diesen Angaben einen Testament-Entwurf als Word-Dokument:');
+  L.push('');
+
+  function add(label, key){
+    var v = val(key);
+    if(v) L.push(label+': '+v);
+  }
+  function sec(title){
+    L.push(''); L.push('── '+title+' ──');
+  }
+
+  sec('1. MEINE PERSON');
+  add('Name','name'); add('Geburtsdatum','geb'); add('Geburtsort','gebort');
+  add('Wohnort','wohnort'); add('Familienstand','fstand');
+
+  sec('2. PARTNER');
+  add('Name','p_name'); add('Geburtsdatum','p_geb');
+  add('Berliner Testament vorhanden','p_berliner');
+
+  sec('3. KINDER');
+  add('Kind 1','k1'); add('Kind 2','k2'); add('Kind 3','k3');
+
+  sec('4. ERBEINSETZUNG');
+  add('Haupterbe','erbe'); add('Ersatzerbe','ersatz');
+
+  sec('5. IMMOBILIEN');
+  add('Objekt 1','im1'); add('Besonderheit','im1_bes'); add('Weitere','im2');
+
+  sec('6. VERMOEGEN');
+  add('Wertpapiere/Depot','v_depot'); add('Edelmetalle','v_metall');
+  add('Kryptowaehrungen','v_krypto'); add('Sonstiges','v_sonst');
+
+  sec('7. DARLEHEN/FORDERUNGEN');
+  add('Darlehen','darlehen');
+
+  sec('8. VERMAECHTNISSE');
+  add('Vermaechtnis 1','vm1'); add('Vermaechtnis 2','vm2'); add('Vermaechtnis 3','vm3');
+
+  sec('9. PFLICHTTEIL');
+  add('Strafklausel','pf_klausel'); add('Wuensche','pf_wunsch');
+
+  sec('10. TESTAMENTSVOLLSTRECKER');
+  add('Gewuenscht','tv'); add('Person','tv_name');
+
+  sec('11. VOLLMACHTEN');
+  add('Vorsorgevollmacht','vv'); add('Bevollmaechtigte Person','vv_person');
+  add('Patientenverfuegung','pv');
+
+  sec('12. BESTATTUNG');
+  add('Art','b_art'); add('Ort','b_ort'); add('Wuensche','b_wunsch'); add('Organspende','b_organ');
+
+  sec('13. AUFBEWAHRUNG');
+  add('Original','a_ort'); add('Notar','a_notar'); add('Nachlassgericht','a_gericht');
+
+  sec('14. BESONDERE HINWEISE');
+  add('Hinweise','hinweise');
+
+  L.push('');
+  L.push('Bitte beruecksichtige deutsches Erbrecht (BGB) und weise auf');
+  L.push('eigenhaendige Schriftform nach Paragraf 2247 BGB hin.');
+
+  return L.join('\n');
+}
+
+/* ── ACTIONS ── */
+function toast(msg){
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 2400);
+}
+
+function sendToClaude(){
+  doSave();
+  var text = buildText();
+  if(navigator.share){
+    navigator.share({ text: text }).then(function(){
+      toast('✓ Geteilt');
+    }).catch(function(){ /* user cancelled */ });
+  } else {
+    copyFallback(text);
+  }
+}
+
+function copyText(){
+  closeMenu();
+  doSave();
+  copyFallback(buildText());
+}
+
+function copyFallback(text){
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(function(){
+      toast('✓ In Zwischenablage kopiert');
+    }).catch(function(){
+      legacyCopy(text);
+    });
+  } else {
+    legacyCopy(text);
+  }
+}
+
+function legacyCopy(text){
+  var ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.opacity = '0';
+  document.body.appendChild(ta);
+  ta.focus(); ta.select();
+  try { document.execCommand('copy'); toast('✓ Kopiert'); }
+  catch(e){ toast('Kopieren fehlgeschlagen'); }
+  document.body.removeChild(ta);
+}
+
+function previewText(){
+  closeMenu();
+  doSave();
+  alert(buildText());
+}
+
+function clearData(){
+  closeMenu();
+  if(confirm('Alle Eingaben unwiderruflich löschen?')){
+    localStorage.removeItem(SK);
+    D = {};
+    var els = document.querySelectorAll('[data-k]');
+    for(var i=0; i<els.length; i++) els[i].value = '';
+    updateProg();
+    toast('✓ Gelöscht');
+  }
+}
+
+/* ── MENU ── */
+function openMenu(){ document.getElementById('menuSheet').classList.add('show'); }
+function closeMenu(){ document.getElementById('menuSheet').classList.remove('show'); }
+
+/* ── INSTALL HINT ── */
+function isStandalone(){
+  return (window.navigator.standalone === true) ||
+         (window.matchMedia('(display-mode: standalone)').matches);
+}
+function hideInstall(){
+  document.getElementById('installHint').classList.remove('show');
+  try { localStorage.setItem('tv_install_hide', Date.now().toString()); } catch(e){}
+}
+function maybeShowInstall(){
+  if(isStandalone()) return;
+  var h = null;
+  try { h = localStorage.getItem('tv_install_hide'); } catch(e){}
+  if(h && (Date.now() - parseInt(h)) < 14*24*60*60*1000) return;
+  document.getElementById('installHint').classList.add('show');
+}
+
+/* ── INIT ── */
+document.addEventListener('DOMContentLoaded', function(){
+  load();
+  maybeShowInstall();
+  var els = document.querySelectorAll('[data-k]');
+  for(var i=0; i<els.length; i++){
+    els[i].addEventListener('input', scheduleSave);
+    els[i].addEventListener('change', scheduleSave);
+  }
+});
+</script>
+</body>
+</html>

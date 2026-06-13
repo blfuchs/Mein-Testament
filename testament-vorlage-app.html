@@ -441,8 +441,11 @@ body{
     <div class="ms-title">Optionen</div>
     <button class="ms-btn" onclick="copyText()">📋 Text in Zwischenablage kopieren</button>
     <button class="ms-btn" onclick="previewText()">👁️ Text-Vorschau anzeigen</button>
+    <button class="ms-btn" onclick="exportBackup()">💾 Backup speichern (JSON)</button>
+    <button class="ms-btn" onclick="importBackup()">📂 Backup wiederherstellen</button>
     <button class="ms-btn danger" onclick="clearData()">🗑️ Alle Eingaben löschen</button>
     <button class="ms-cancel" onclick="closeMenu()">Abbrechen</button>
+<input type="file" id="importFile" accept=".json" style="display:none" onchange="handleImport(event)">
   </div>
 </div>
 
@@ -647,6 +650,47 @@ function clearData(){
 }
 
 /* ── MENU ── */
+function exportBackup(){
+  closeMenu();
+  doSave();
+  var payload = JSON.stringify({app:'testament-vorlage',version:'v1',date:new Date().toISOString(),data:D},null,2);
+  var b = new Blob([payload],{type:'application/json'});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(b);
+  a.download = 'testament-backup-'+new Date().toISOString().slice(0,10)+'.json';
+  a.click();
+  toast('✓ Backup gespeichert');
+}
+function importBackup(){
+  closeMenu();
+  document.getElementById('importFile').click();
+}
+function handleImport(event){
+  var file = event.target.files[0];
+  if(!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e){
+    try {
+      var parsed = JSON.parse(e.target.result);
+      var data = parsed.data || parsed;
+      if(typeof data !== 'object') throw new Error('Ungültiges Format');
+      if(!confirm('Backup wiederherstellen? Aktuelle Eingaben werden überschrieben.')) return;
+      D = data;
+      localStorage.setItem(SK, JSON.stringify(D));
+      var els = document.querySelectorAll('[data-k]');
+      for(var i=0;i<els.length;i++){
+        var k = els[i].getAttribute('data-k');
+        if(D[k] !== undefined) els[i].value = D[k];
+      }
+      updateProg();
+      toast('✓ Backup wiederhergestellt');
+    } catch(err){
+      alert('Fehler beim Laden: ' + err.message);
+    }
+    event.target.value = '';
+  };
+  reader.readAsText(file);
+}
 function openMenu(){ document.getElementById('menuSheet').classList.add('show'); }
 function closeMenu(){ document.getElementById('menuSheet').classList.remove('show'); }
 

@@ -593,7 +593,9 @@ body{font-family:'Source Sans 3',system-ui,sans-serif;background:var(--cream);co
       <div class="exp-btns">
         <button class="btn-exp p" onclick="window.print()">🖨️ Drucken / Als PDF</button>
         <button class="btn-exp s" onclick="exportJSON()">💾 JSON-Backup</button>
+        <button class="btn-exp s" onclick="importJSON()">📂 Backup laden</button>
         <button class="btn-exp s" onclick="clearAll()">🗑️ Alle Daten löschen</button>
+<input type="file" id="impFile" accept=".json" style="display:none" onchange="handleImport(event)">
       </div>
     </div>
     <div class="iblock" style="margin-bottom:18px">
@@ -887,6 +889,42 @@ function nav(sec){
 }
 
 /* EXPORT */
+function importJSON(){
+  document.getElementById('impFile').click();
+}
+function handleImport(event){
+  var file = event.target.files[0];
+  if(!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e){
+    try {
+      var parsed = JSON.parse(e.target.result);
+      // Support both formats: {data:{...}} and flat {...}
+      var data = parsed.data || parsed;
+      // Remove meta keys
+      delete data.app; delete data.version; delete data.note; delete data.date;
+      if(typeof data !== 'object' || Object.keys(data).length === 0){
+        throw new Error('Keine Daten gefunden');
+      }
+      if(!confirm('Backup laden?\n\nAktuelle Eingaben werden überschrieben.')){
+        event.target.value = ''; return;
+      }
+      // Decrypt workaround: merge into D then re-encrypt
+      Object.keys(data).forEach(function(k){ D[k] = data[k]; });
+      persistEncrypted().then(function(){
+        document.querySelectorAll('[data-key]').forEach(function(el){
+          if(D[el.dataset.key] !== undefined) el.value = D[el.dataset.key];
+        });
+        updateMeta(true); updateProg(); buildOv();
+        alert('✅ Backup erfolgreich geladen!');
+      });
+    } catch(err){
+      alert('Fehler beim Laden: ' + err.message);
+    }
+    event.target.value = '';
+  };
+  reader.readAsText(file);
+}
 async function exportJSON(){
   var stored=localStorage.getItem(SK);
   if(!stored){alert('Keine Daten zum Exportieren.'); return;}

@@ -5,7 +5,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3.0, user-scalable=yes">
 <title>Erbschafts-Vorsorge</title>
 
 <!-- ═══ PWA META TAGS (iOS + Android) ═══ -->
@@ -31,7 +31,7 @@
   --border:#d4c8b8;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Source Sans 3',system-ui,sans-serif;background:var(--cream);color:var(--ink);min-height:100vh;font-size:15px;-webkit-tap-highlight-color:transparent}
+body{font-family:'Source Sans 3',system-ui,sans-serif;background:var(--cream);color:var(--ink);min-height:100vh;font-size:17px;-webkit-tap-highlight-color:transparent}
 /* PWA standalone: hide browser chrome padding */
 @media all and (display-mode: standalone){body{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}}
 /* Install Banner */
@@ -98,7 +98,7 @@ body{font-family:'Source Sans 3',system-ui,sans-serif;background:var(--cream);co
 /* TABS */
 .nav-tabs{display:flex;overflow-x:auto;background:var(--cream2);border-bottom:2px solid var(--border);padding:0 4px;scrollbar-width:none}
 .nav-tabs::-webkit-scrollbar{display:none}
-.nav-tab{padding:9px 13px;font-size:.7rem;color:var(--ink4);cursor:pointer;white-space:nowrap;border:none;border-bottom:2px solid transparent;margin-bottom:-2px;background:none;font-family:inherit;display:flex;align-items:center;gap:4px;transition:all .15s}
+.nav-tab{padding:10px 14px;font-size:.82rem;color:var(--ink4);cursor:pointer;white-space:nowrap;border:none;border-bottom:2px solid transparent;margin-bottom:-2px;background:none;font-family:inherit;display:flex;align-items:center;gap:4px;transition:all .15s}
 .nav-tab.active{color:var(--gold);border-bottom-color:var(--gold);font-weight:700}
 .nav-tab .tck{width:13px;height:13px;border-radius:50%;background:var(--cream3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.52rem;color:transparent}
 .nav-tab.done .tck{background:var(--green);border-color:var(--green);color:white}
@@ -124,12 +124,12 @@ body{font-family:'Source Sans 3',system-ui,sans-serif;background:var(--cream);co
 /* FIELDS */
 .fields-wrap{padding:14px 18px;display:flex;flex-direction:column;gap:12px}
 .fg{background:white;border:1px solid var(--border);border-radius:10px;overflow:hidden}
-.fg-title{padding:8px 13px;background:var(--cream2);border-bottom:1px solid var(--border);font-size:.68rem;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em}
+.fg-title{padding:8px 13px;background:var(--cream2);border-bottom:1px solid var(--border);font-size:.8rem;font-weight:700;color:var(--ink2);text-transform:uppercase;letter-spacing:.06em}
 .fr{padding:9px 13px;border-bottom:1px solid var(--cream2);display:flex;flex-direction:column;gap:4px}
 .fr:last-child{border-bottom:none}
-.flbl{font-size:.7rem;font-weight:600;color:var(--ink3);display:flex;justify-content:space-between;align-items:center}
+.flbl{font-size:.85rem;font-weight:700;color:var(--ink2);display:flex;justify-content:space-between;align-items:center}
 .fopt{font-size:.59rem;color:var(--ink4);font-weight:400;font-style:italic}
-.fi,.fta,.fsel{width:100%;background:var(--cream);border:1px solid var(--border);border-radius:6px;padding:7px 10px;font-size:.8rem;color:var(--ink);font-family:inherit;outline:none;transition:border-color .15s;-webkit-appearance:none}
+.fi,.fta,.fsel{width:100%;background:var(--cream);border:1px solid var(--border);border-radius:6px;padding:8px 11px;font-size:.95rem;color:var(--ink);font-family:inherit;outline:none;transition:border-color .15s;-webkit-appearance:none}
 .fi:focus,.fta:focus,.fsel:focus{border-color:var(--gold);background:white}
 .fta{min-height:66px;resize:vertical;line-height:1.5}
 .fsel{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%239c8c7a'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:26px;cursor:pointer}
@@ -147,7 +147,7 @@ body{font-family:'Source Sans 3',system-ui,sans-serif;background:var(--cream);co
 .ov-card:hover{border-color:var(--gold)}
 .ov-icon{font-size:1.3rem;flex-shrink:0}
 .ov-info{flex:1}
-.ov-ttl{font-weight:600;font-size:.83rem;color:var(--ink)}
+.ov-ttl{font-weight:700;font-size:.95rem;color:var(--ink)}
 .ov-st{font-size:.68rem;color:var(--ink4);margin-top:2px}
 .ov-badge{font-size:.62rem;border-radius:10px;padding:2px 9px;font-weight:600;white-space:nowrap}
 .ov-badge.done{background:#e8f5e9;color:var(--green)}

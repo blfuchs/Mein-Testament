@@ -2,6 +2,9 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Erbschafts-Vorsorge</title>
 
@@ -899,24 +902,35 @@ function handleImport(event){
   reader.onload = function(e){
     try {
       var parsed = JSON.parse(e.target.result);
-      // Support both formats: {data:{...}} and flat {...}
-      var data = parsed.data || parsed;
+      // Support {data:{...}} wrapper or flat object
+      var data = (parsed.data && typeof parsed.data === 'object') ? parsed.data : parsed;
       // Remove meta keys
-      delete data.app; delete data.version; delete data.note; delete data.date;
-      if(typeof data !== 'object' || Object.keys(data).length === 0){
-        throw new Error('Keine Daten gefunden');
-      }
-      if(!confirm('Backup laden?\n\nAktuelle Eingaben werden überschrieben.')){
+      var metaKeys = ['app','version','note','date'];
+      metaKeys.forEach(function(k){ delete data[k]; });
+      // Count real data fields
+      var keys = Object.keys(data);
+      if(keys.length === 0){ throw new Error('Keine Felder im JSON gefunden'); }
+      if(!confirm('Backup laden? (' + keys.length + ' Felder)\n\nAktuelle Eingaben werden überschrieben.')){
         event.target.value = ''; return;
       }
-      // Decrypt workaround: merge into D then re-encrypt
-      Object.keys(data).forEach(function(k){ D[k] = data[k]; });
+      // Clean "nicht bekannt" values – treat as empty
+      keys.forEach(function(k){
+        var v = data[k];
+        if(!v || v === 'nicht bekannt' || v === 'nicht bekannt.' || v.trim() === ''){
+          D[k] = '';
+        } else {
+          D[k] = v;
+        }
+      });
       persistEncrypted().then(function(){
         document.querySelectorAll('[data-key]').forEach(function(el){
-          if(D[el.dataset.key] !== undefined) el.value = D[el.dataset.key];
+          var key = el.dataset.key;
+          if(D[key] !== undefined) el.value = D[key];
         });
         updateMeta(true); updateProg(); buildOv();
-        alert('✅ Backup erfolgreich geladen!');
+        alert('✅ Backup geladen! Bitte jeden Abschnitt prüfen und speichern.');
+      }).catch(function(err){
+        alert('Fehler beim Verschlüsseln: ' + err.message);
       });
     } catch(err){
       alert('Fehler beim Laden: ' + err.message);
